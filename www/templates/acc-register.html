@@ -1,0 +1,68 @@
+<ion-view view-title="Register">
+  <ion-content ng-controller="RegisterCtrl">
+    <form name="registerForm" novalidate>
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Nom</span>
+          <input type="text" name="name" id="name" ng-model="name" ng-minlength="3">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Age</span>
+          <input type="number" name="age" id="age" ng-model="age" ng-minlength="2">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Mot de Passe</span>
+          <input type="password" name="passwordP" id="passwordP"
+                 ng-model="passwordP" ng-minlength="6" ng-maxlength="20" required>
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Confirmation</span>
+          <input type="password" name="passwordCheck" id="passwordCheck" ng-model="passwordCheck"
+                 ng-minlength="6" ng-keyup="passwdcheck()">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Email</span>
+          <input type="email" id="email" name="email" ng-model="email" ng-minlength="5">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Biographie</span>
+          <input type="text" id="bio" name="bio" ng-model="bio" ng-minlength="5">
+        </label>
+        <button id="fileUpload" name="fileUpload" class="fileUpload">
+          Ma photo de Profile
+          <input type="file" fileread="fileSelected" id="picfile"
+                 name="picfile" class="upload" ng-model="picfile"/>
+        </button>
+        {{ fileSelected.name }}
+      </div>
+
+      <div class="padding">
+        <p class="assertive" ng-show="registerForm.name.$error.minlength">
+          - Your name is incorect</p>
+        <p class="assertive" ng-show="registerForm.age.$error.minlength">
+          - Age is incorect</p>
+
+        <p class="assertive" ng-show="registerForm.email.$error.required">
+         -* Email is required</p>
+        <p class="assertive" ng-show="registerForm.email.$error.email">
+          - Email must be an email address</p>
+        <p class="assertive" ng-show="registerForm.email.$error.minlength">
+          - Email must be longer than 5 characters</p>
+
+        <p class="assertive" ng-show="registerForm.passwordP.$error.required">
+          - Password is required</p>
+        <p class="assertive" ng-show="registerForm.passwordP.$error.minlength">
+          - Password must be longer than 6 characters</p>
+
+        <p class="assertive" ng-show="match">
+          - The two password don't match </p>
+      </div>
+
+      <div class="padding">
+        <button type="button" class="button button-block button-balanced"
+                ng-disabled="registerForm.email.$invalid || registerForm.password.$invalid || match || registerForm.name.$error.minlength || registerForm.age.$error.minlength || registerForm.bio.$error.minlength"
+                ng-click="submit()">Submit</button>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,96 @@
+<ion-view view-title="Mon profile">
+  <ion-content ng-controller="AccountCtrl">
+    <ion-nav-buttons side="right">
+      <button class="button" ng-click="disconnect()">
+        Deconnexion
+      </button>
+    </ion-nav-buttons>
+
+    <ul class="list" style="width:100%">
+      <li class="item">
+      <div class="button-bar">
+        <button class="button button-calm {{ select == 1 ? '' : 'button-outline' }}" ng-click="select = 1;chartWeightUp()">Poids</button>
+        <button class="button button-calm {{ select == 2 ? '' : 'button-outline' }}" ng-click="select = 2;chartSportUp()">Sport</button>
+        <button class="button button-calm {{ select == 3 ? '' : 'button-outline' }}" ng-click="select = 3;chartHealthyUp()">Repas</button>
+      </div>
+      </li>
+      <div ng-show="select == 1">
+        <li class="item">
+          <canvas id="chartWeight"></canvas>
+        </li>
+        <li class="item centered item-text-wrap">
+          <h3>Activite {{ Streak }} jours d'affilé</h3>
+        </li>
+        <div class="card centered">
+          <div class="row item item-text-wrap">
+            <div class="col">
+              <div class="wrapper2">
+                <img ng-src="{{ userPic }}"/>
+                <div id="progressBarP"></div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="col">
+                <h3>Premiere pesee</h3>
+                {{ FWeight }}
+              </div>
+              <div class="col">
+                <h3>Poids perdu</h3>
+                {{ FWeight - LWeight}}
+              </div>
+            </div>
+            <div class="col">
+              <div class="col">
+                <h3>Objectif</h3>
+                {{ FWeight * 0.9 }}
+              </div>
+              <div class="col">
+                <h3>Derniere pesee</h3>
+                {{ LWeight }}
+              </div>
+            </div>
+          </div>
+          Bien joue vous avez atteint {{ (FWeight - LWeight) / (FWeight * 0.1) * 100 + '% de votre objectif'}}
+        </div>
+      </div>
+
+      <div ng-show="select == 2" style="width:100%">
+        <div style="display:flex;">
+          <div style="width:20%;height:100px" ng-repeat="week in weeks track by $index">
+            <canvas id="{{ 'chartWeek' + $index }}"></canvas>
+            <h6 class="centered" style="margin:0px;margin-top:-10px">Semaine {{ week }} </h6>
+          </div>
+        </div>
+        <div class="centered">
+          <br/>Cette semaine vous avez planifie {{ weekSportsPlanTime + 0 }} minutes
+        </div>
+        <li class="item" style="width:100%">
+          <canvas id="chartSport"></canvas>
+        </li>
+      </div>
+
+      <div ng-show="select == 3" style="height:100%">
+        <li class="item" style="height:10%">
+          <canvas id="chartHealthy"></canvas>
+        </li>
+        <div class="card centered">
+          <div class="row item item-text-wrap">
+              <div class="col">
+                <h3>Pas Sain</h3>
+                {{ healthy[2] }}
+               </div>
+               <div class="col">
+                <h3>Sain </h3>
+                {{ healthy[1] }}
+               </div>
+               <div class="col">
+                 <h4>Tres Sain</h3>
+                   {{ healthy[0] }}
+               </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+    <ion-content>
+
+</ion-view>

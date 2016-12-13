@@ -1,0 +1,70 @@
+Node version: v7.1.0
+
+Cordova version: 6.4.0
+
+Config.xml file: 
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<widget id="com.ionicframework.physis485196" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>physis</name>
+  <description>
+        An Ionic Framework and Cordova project.
+    </description>
+  <author email="you@example.com" href="http://example.com.com/">
+      Your Name Here
+    </author>
+  <content src="index.html"/>
+  <access origin="*"/>
+  <preference name="webviewbounce" value="false"/>
+  <preference name="UIWebViewBounce" value="false"/>
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="SplashScreenDelay" value="2000"/>
+  <preference name="FadeSplashScreenDuration" value="2000"/>
+  <preference name="android-minSdkVersion" value="16"/>
+  <preference name="BackupWebStorage" value="none"/>
+  <feature name="StatusBar">
+    <param name="ios-package" value="CDVStatusBar" onload="true"/>
+  </feature>
+</widget>
+
+Plugins: 
+
+cordova-plugin-camera,cordova-plugin-compat,cordova-plugin-console,cordova-plugin-device,cordova-plugin-splashscreen,cordova-plugin-statusbar,cordova-plugin-whitelist,ionic-plugin-keyboard
+
+Android platform:
+
+Available Android targets:
+----------
+id: 1 or "android-22"
+     Name: Android 5.1.1
+     Type: Platform
+     API level: 22
+     Revision: 2
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800, WXGA800-7in, AndroidWearRound, AndroidWearRound400x400, AndroidWearRoundChin320x290, AndroidWearRoundChin360x325, AndroidWearRoundChin360x330, AndroidWearSquare, AndroidWearSquare320x320, AndroidWearRound, AndroidWearRound400x400, AndroidWearRoundChin320x290, AndroidWearRoundChin360x325, AndroidWearRoundChin360x330, AndroidWearSquare, AndroidWearSquare320x320
+ Tag/ABIs : android-tv/armeabi-v7a, android-tv/x86, android-wear/armeabi-v7a, android-wear/x86, default/armeabi-v7a, default/x86, default/x86_64, google_apis/armeabi-v7a, google_apis/x86, google_apis/x86_64
+----------
+id: 2 or "android-25"
+     Name: Android 7.1.1
+     Type: Platform
+     API level: 25
+     Revision: 1
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800, WXGA800-7in
+ Tag/ABIs : no ABIs.
+----------
+id: 3 or "Google Inc.:Google APIs:22"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 5.1.1 (API level 22)
+     Libraries:
+      * com.android.future.usb.accessory (usb.jar)
+          API for USB Accessories
+      * com.google.android.media.effects (effects.jar)
+          Collection of video effects
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800, WXGA800-7in, AndroidWearRound, AndroidWearRound400x400, AndroidWearRoundChin320x290, AndroidWearRoundChin360x325, AndroidWearRoundChin360x330, AndroidWearSquare, AndroidWearSquare320x320, AndroidWearRound, AndroidWearRound400x400, AndroidWearRoundChin320x290, AndroidWearRoundChin360x325, AndroidWearRoundChin360x330, AndroidWearSquare, AndroidWearSquare320x320
+ Tag/ABIs : no ABIs.
+
