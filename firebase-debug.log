@@ -1,0 +1,12 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/bin/node /usr/bin/firebase deploy
+[debug] CLI Version:  3.2.0
+[debug] Platform:     linux
+[debug] Node Version: v7.3.0
+[debug] Time:         Fri Dec 30 2016 11:29:46 GMT+0100 (CET)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[debug] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase"]
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/physis-22d22 
+[debug] <<< HTTP RESPONSE 200
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/physis-22d22/tokens 

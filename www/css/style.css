@@ -54,7 +54,11 @@ svg {
     border-radius: 50%;
 }
 
-/* Group */
+
+/* Group Page */
+.right {
+  text-align: right;
+}
 
 div.group-top {
   width: 22%;
@@ -121,11 +125,6 @@ img.group-top {
   text-align: center;
 }
 
-/* Group Page */
-.right {
-  text-align: right;
-}
-
 
 /* Input for chat */
 .chatUpload {
@@ -155,7 +154,7 @@ img.group-top {
 
 .fixed-bottom {
   position: absolute;
-  bottom: 5%;
+  bottom: 6%;
   width: 100%;
 }
 
@@ -189,6 +188,6 @@ img.group-top {
 /* Bigger Icone */
 
 .big {
-  font-size: 160% !important;
+  font-size: 130% !important;
   vertical-align: middle;
 }

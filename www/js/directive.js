@@ -30,13 +30,8 @@ angular.module('starter.directives', ['ionic'])
               var profileRef = firebase.storage().ref().child('chat_img/' + uid + "/" + Time.getTime());
               profileRef.put(changeEvent.target.files[0]).then(function(snapshot) {
                 console.log('Chat: file uploaded.');
-                console.log("Sending : " + Time.getTime() + ", " + scope.message);
-                Database.ref('groups/' + Gid + '/messages/').push({
-                  time: Time.getTime(),
-                  msg: "",
-                  name: Name,
-                  img: snapshot.downloadURL
-                });
+                scope.$parent.img = snapshot.downloadURL
+                scope.$parent.sendMsg()
               }).catch(function(error) {
                 console.log(error.code + " : " + error.message)
                 alert(error.message)

@@ -2,10 +2,9 @@
   <ion-content ng-controller="CoachCtrl">
     <div class="card">
       <div class="group-top">
-        <img class="group-top" id="profilePic" name="profilePic" ng-src="{{ coach.pic }}"></img>
-        <span><br/>{{ coach.name }}</span>
-        </a>
+        <img class="group-top" id="profilePic" name="profilePic" ng-src="{{ coachPic }}"></img>
       </div>
+      <br/>{{ coachName }}
     </div>
     <div class="list padding">
       <li class="{{ data.style }} item item-text-wrap" ng-repeat="data in conversation track by $index">
@@ -14,17 +13,18 @@
         <img class="chatimg" ng-show="data.img" ng-src="{{ data.img }}"></img>
       </li>
     </div>
-    <div class="item item-input-inset">
-      <label class="item-input-wrapper">
-        <input type="text" id="message" name="message" ng-model="message" placeholder="Message">
-      </label>
-      <button class="button button-small" ng-click="send(message)">
-        Envoyer
+    <br/>
+  </ion-content>
+  <div ng-controller="inputCtrl" class="item fixed-bottom item-input-inset">
+    <label class="item-input-wrapper">
+      <input type="text" id="message" name="message" ng-model="message" placeholder="Message">
+    </label>
+    <button class="button button-small" ng-click="sendMsg(1)">
+      Envoyer
       </button>
-      <button  id="chatUpload" name="chatUpload" class="chatUpload ion-image" ng-click="sendimg()">
-        <input type="file" accept="image/*" chatupload="fileSelected" id="picfile"
+      <button  id="chatUpload" name="chatUpload" class="chatUpload ion-image" ng-click="choosePhoto()">
+        <input ng-show="!camera" type="file" accept="image/*" chatupload="fileSelected" id="picfile"
                name="chatfile" class="upload" ng-model="chatfile"/>
       </button>
     </div>
-  </ion-content>
 </ion-view>

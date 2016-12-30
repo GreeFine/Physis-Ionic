@@ -10,14 +10,14 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
   .controller('TrackCtrl', function($scope, sFirebase, $interval) {
     var d = new Date()
     $scope.aDay = d.getDate()
-    $scope.aMonth = d.getMonth()
+    $scope.aMonth = d.getMonth()+1
     var weekday = [ "Lundi", "Mardi", "Mercredi", "Jeudi",
                     "Vendredi", "Samedi", "Dimanche" ]
     var monthNames = [ "January", "February", "March", "April",
                        "May", "June", "July", "August", "September",
                        "October", "November", "December" ]
-    var sports = [ "Basketball", "Volley-Ball", "Tennis", "Football",
-                   "Natation", "Equitation", "Rugby" ]
+    var sports = [ "Jogging", "Marche Rapide", "Natation", "Fitness",
+                   "Danse", "Sport de combat", "Sport collectif" ]
     var periods = [ 15, 30, 45, 60, 90, 120, 150 ]
     $scope.monthNames = monthNames
     $scope.weekday = weekday
@@ -25,19 +25,19 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
     $scope.periods = periods
     $scope.today = d.getDay() == 0 ? 6 : d.getDay() - 1
     $scope.dayMonth = d.getDate()
-    $scope.month = d.getMonth()
+    $scope.month = d.getMonth()+1
     $scope.planningSp = []
     $scope.planningSpD = []
     $scope.selectedSp = []
-    var selectedDate = d.getFullYear() + '-' + d.getMonth() + '-'
+    var selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
         + (d.getDate() > 9 ?  d.getDate() : '0' + d.getDate())
     $scope.changeDate = function(nb) {
       d.setDate(d.getDate() + nb)
-      selectedDate = d.getFullYear() + '-' + d.getMonth() + '-'
+      selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
           + (d.getDate() > 9 ?  d.getDate() : '0' + d.getDate())
       $scope.today = d.getDay() == 0 ? 6 : d.getDay() - 1;
       $scope.dayMonth = d.getDate();
-      $scope.month = d.getMonth();
+      $scope.month = d.getMonth()+1;
       $scope.updateTrack()
     }
     $scope.setSpPlan = function() {
@@ -46,9 +46,9 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
         if (!confirm("Etes vous sur de vouloir envoyer votre planing, il ne sera plus modifiable avant la semaine prochaine"))
           return ;
         // Select the first day as container
-        var firstDayWeek =  new Date()
+        var firstDayWeek = new Date()
         firstDayWeek.setDate(d.getDate() - d.getDay())
-        var selectedDate = d.getFullYear() + '-' + d.getMonth() + '-'
+        var selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
             + (firstDayWeek.getDate() > 9 ? firstDayWeek.getDate() : '0' + firstDayWeek.getDate())
         sFirebase.trackingSet("weekSportsPlan", $scope.weekSportsPlan, selectedDate)
         $scope.validSpPlan = true
@@ -71,6 +71,9 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
       }
       else
         alert("Sport description is incomplete")
+    }
+    $scope.deletePlan = function(index) {
+      $scope.weekSportsPlan.splice(index, 1);
     }
     $scope.updateChoice = function(nb, type) {
       var meals = [$scope.selectedBF, $scope.selectedLC, $scope.selectedDN]
@@ -278,46 +281,6 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
       waitready(sFirebase.data.group, sFirebase.callback.groupDisplay,
                 id1, $interval)}, 500);
     sFirebase.callback.groupDisplay = (function() { groupDisplay($scope) })
-    $scope.send = function() { sFirebase.sendMessage($scope) }
-    $scope.takePhoto = function () {
-      var options = {
-        quality: 75,
-        destinationType: Camera.DestinationType.DATA_URL,
-        sourceType: Camera.PictureSourceType.CAMERA,
-        allowEdit: true,
-        encodingType: Camera.EncodingType.JPEG,
-        targetWidth: 300,
-        targetHeight: 300,
-        popoverOptions: CameraPopoverOptions,
-        saveToPhotoAlbum: false
-      };
-
-      $cordovaCamera.getPicture(options).then(function (imageData) {
-        $scope.imgURI = "data:image/jpeg;base64," + imageData;
-      }, function (err) {
-        // An error occured. Show a message to the user
-      });
-    }
-
-    $scope.choosePhoto = function () {
-      var options = {
-        quality: 75,
-        destinationType: Camera.DestinationType.DATA_URL,
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-        allowEdit: true,
-        encodingType: Camera.EncodingType.JPEG,
-        targetWidth: 300,
-        targetHeight: 300,
-        popoverOptions: CameraPopoverOptions,
-        saveToPhotoAlbum: false
-      };
-
-      $cordovaCamera.getPicture(options).then(function (imageData) {
-        $scope.imgURI = "data:image/jpeg;base64," + imageData;
-      }, function (err) {
-        // An error occured. Show a message to the user
-      });
-    }
   })
 
   .controller('AccountCtrl', function($scope, $interval, sFirebase) {
@@ -475,9 +438,9 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
 	  };
    var configHealthy = {
       labels: [
-        "Tres sain",
-        "Sain",
-        "Pas sain"
+        "Approuvée par le coach",
+        "Pas très Physis",
+        "Du bon et du moins bon"
       ],
       datasets: [
         {
@@ -563,17 +526,18 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
         data: configSport,
         options: {
           cutoutPercentage: 85,
+          legend: { display: false },
 			    elements: {
 				    arc: {
 					    roundedCornersFor: 0
 				    },
 				    center: {
-					    maxText: '100%',
-					    text: ($scope.weekSportsTime + " minutes"),
+					    maxText: '80%',
+					    text: ($scope.weekSportsTime + " minutes effectuées"),
 					    fontColor: '#008000',
 					    fontStyle: 'normal',
 					    minFontSize: 2,
-					    maxFontSize: 40,
+					    maxFontSize: 30,
 				    }
 			    }
         }
@@ -594,9 +558,32 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
       });
     }
     $scope.select = 1
+    $scope.select2 = true
     $scope.chartWeightUp()
     $scope.chartSportUp()
     $scope.chartHealthyUp()
+    var weighingsScale = function(scope) {
+      scope.weighings = []
+      var track = sFirebase.data.track
+      var date
+      var lastDate = false
+      for (var e in track.weighings)
+      {
+        date = new Date(e)
+        if ((scope.select2 && lastDate != ((date.getMonth()+1) + '-' + (date.getDate() - date.getDay())))
+            || (!scope.select2 && lastDate != (date.getMonth()+1)))
+        {
+          if (scope.select2)
+            lastDate = ((date.getMonth()+1) + '-' + (date.getDate() - date.getDay()))
+          else
+            lastDate = date.getMonth()+1
+          scope.weighings.push(track.weighings[e])
+        }
+      }
+      scope.chartWeight.data.datasets[0].data = scope.weighings
+      scope.chartWeight.update()
+    }
+    $scope.updateChart = function() { weighingsScale($scope) }
     var displayUser = function (scope) {
       var track = sFirebase.data.track
       scope.PrgramStart = sFirebase.data.user.programStart
@@ -606,16 +593,11 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
       scope.healthy = track.healthy
       scope.chartHealthy.data.datasets[0].data = track.healthy
       scope.chartHealthy.update()
-      scope.weighings = []
-      console.log(track.weighings)
-      for (var e in track.weighings)
-        scope.weighings.push(track.weighings[e])
-      scope.chartWeight.data.datasets[0].data = scope.weighings
-      scope.chartWeight.update()
+      weighingsScale(scope)
       scope.weekSportsObjectiv = [ track.weekSportsTime, 150 - track.weekSportsTime ]
       scope.weekSportsTime = Math.round(track.weekSportsTime)
       scope.chartSport.data.datasets[0].data = $scope.weekSportsObjectiv
-      scope.chartSport.options.elements.center.text = ($scope.weekSportsTime + " minutes")
+      scope.chartSport.options.elements.center.text = ($scope.weekSportsTime + " minutes effectuées")
       scope.chartSport.update()
       scope.weeksSports = track.weeksSports
       var i = 0
@@ -683,10 +665,65 @@ angular.module('starter.controllers', ['firebase','ionic', 'ngCordova'])
     }
   })
 
-  .controller('CoachCtrl', function($scope, sFirebase, $interval) {
+  .controller('CoachCtrl', function($scope, sFirebase, $interval, $cordovaCamera) {
+    var coachDisplay = function(scope) {
+      scope.conversation = sFirebase.data.coach.conversation
+      scope.coachName = sFirebase.data.coach.name
+      scope.coachPic = sFirebase.data.coach.profilePic
+      if(!scope.$$phase) { scope.$apply() }
+    }
+    sFirebase.callback.coach = (function() { coachDisplay($scope) })
     var id1 = $interval(function() {
-      waitready(sFirebase.data.user, (function() {sFirebase.getCoachMessage($scope)}), id1, $interval)}, 500);
-    $scope.send = function(msg) {sFirebase.sendCoachMessage(msg) }
+      waitready(sFirebase.data.coach, sFirebase.callback.coach,
+                id1, $interval)}, 500);
+  })
+
+  .controller('inputCtrl', function($scope, sFirebase) {
+    $scope.img = ""
+    $scope.message = ""
+    $scope.sendMsg = function(who) { sFirebase.sendMessage($scope,who); $scope.message = undefined }
+        if (typeof Camera != 'undefined')
+    {
+      $scope.camera = true
+      $scope.takePhoto = function () {
+        var options = {
+          quality: 75,
+          destinationType: Camera.DestinationType.DATA_URL,
+          sourceType: Camera.PictureSourceType.CAMERA,
+          allowEdit: true,
+          encodingType: Camera.EncodingType.JPEG,
+          targetWidth: 300,
+          targetHeight: 300,
+          popoverOptions: CameraPopoverOptions,
+          saveToPhotoAlbum: false
+        };
+        $cordovaCamera.getPicture(options).then(function (imageData) {
+          $scope.imgURI = "data:image/jpeg;base64," + imageData;
+        }, function (err) {
+          // An error occured. Show a message to the user
+        });
+      }
+      $scope.choosePhoto = function () {
+        var options = {
+          quality: 75,
+          destinationType: Camera.DestinationType.DATA_URL,
+          sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+          allowEdit: true,
+          encodingType: Camera.EncodingType.JPEG,
+          targetWidth: 300,
+          targetHeight: 300,
+          popoverOptions: CameraPopoverOptions,
+          saveToPhotoAlbum: false
+        };
+        $cordovaCamera.getPicture(options).then(function (imageData) {
+          $scope.imgURI = "data:image/jpeg;base64," + imageData;
+        }, function (err) {
+          // An error occured. Show a message to the user
+        });
+      }
+    }
+    else
+      $scope.camera = false
   })
 
   .controller('LessonCtrl', function($scope, sFirebase, $interval) {

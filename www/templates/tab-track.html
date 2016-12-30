@@ -1,4 +1,4 @@
-<ion-view view-title="Track">
+<ion-view view-title="Ma To-do List">
   <ion-content ng-controller="TrackCtrl">
     <div class="card">
       <div style="text-align:left;display:flex">
@@ -8,10 +8,10 @@
         </div>
         <div class="list text-wrap" style="width:70%;right:0px">
           <li class="item item-text-wrap">
-            Bien joue vous avez atteint {{ (progress * 100) + '% de votre objectif'}}
+            Vous avez atteint {{ (progress * 100) + '% de votre 1er objectif'}}
           </li>
           <li class="item item-text-wrap">
-            {{ "You started the program " +  programTime + " weeks ago" }}
+            {{ "Vous êtes en semaine " +  programTime + " du programme Physis" }}
           </li>
         </div>
       </div>
@@ -19,55 +19,62 @@
     <div class="list card">
         <a class="item item-divider centered item-icon-left item-icon-right">
           <button class="button icon ion-chevron-left" ng-click="changeDate(-1)"></button>
-          {{ weekday[today] + ' ' + dayMonth + ' ' + monthNames[month] }}
+          {{ weekday[today] + ' ' + dayMonth + ' ' + monthNames[month - 1] }}
           <button class="button icon ion-chevron-right" ng-click="changeDate(1)" ng-show="dayMonth != aDay || month != aMonth"></button>
       </a>
       <div class="big item {{ validWeight ? '' : 'calm' }}" ng-click="toggleWeight = !toggleWeight">
         <i class="big {{ validWeight ? 'balanced ion-ios-checkmark' : 'ion-ios-circle-outline' }}"></i>
-        Poids
+        Votre poids du jour
       </div>
       <div class="item item-text-wrap" ng-show="toggleWeight">
-        Entre votre pese du jour ci-dessous
+        Notez votre poids du jour ici
         <div class="item item-input-inset">
           <label class="item-input-wrapper">
             <input type="number" placeholder="Poids en Kg" ng-model="iweight">
           </label>
-          <button class="button button-positive" ng-click="setTrack(iweight,'weight')">
-            {{ validWeight ? 'Modifier' : 'Envoyer' }}
+          <button class="button button-small button-positive" ng-click="setTrack(iweight,'weight')">
+            {{ validWeight ? 'Modifier' : 'Enregistrer' }}
           </button>
         </div>
       </div>
       <div class="big item {{ validSteps ? '' : 'calm' }}" ng-click="toggleSteps = !toggleSteps">
         <i class="big {{ validSteps ? 'balanced ion-ios-checkmark' : 'ion-ios-circle-outline' }}"></i>
-        Nombre de pas
+        Renseignez le « Bougeomètre »
       </div>
       <div class="item item-text-wrap" ng-show="toggleSteps">
-        Entre votre nombre de pas ci-dessous
+        Entrez le nombre de pas que vous avez effectués dans la
+        journée. Attention, pour valider cette tâche il vous
+        faudra accomplir plus de 8000 pas en une journée !
         <div class="item item-input-inset">
           <label class="item-input-wrapper">
             <input type="number" placeholder="Nombres de pas" id="isteps" name="isteps" ng-model="isteps">
           </label>
-          <button class="button button-positive" ng-click="setTrack(isteps,'steps')">
-            {{ validSteps ? 'Modifier' : 'Envoyer' }}
+          <button class="button button-small button-positive" ng-click="setTrack(isteps,'steps')">
+            {{ validSteps ? 'Modifier' : 'Enregistrer' }}
           </button>
         </div>
       </div>
       <div class="big item {{ validLesson ? '' : 'calm' }}" ng-click="toggleLesson = !toggleLesson">
         <i class="big {{ validLesson ? 'balanced ion-ios-checkmark' : 'ion-ios-circle-outline' }}"></i>
-        Leçon du jour
+        La leçon de la semaine
       </div>
       <div class="item item-text-wrap" ng-show="toggleLesson">
+        Pour progresser plus vite, Physis vous recommande
+        d’effectuer votre leçon le plus tôt possible dans la semaine
+        (oui dès le dimanche soir !)
         <button class="button button-block button-outline button-calm" ng-click="toggleLesson = !toggleLesson">
-          La Leçon du jour : "BlaBla"
+          Vers ma leçon de 20 min !
         </button>
       </div>
-
       <div class="big item {{ validSpPlan ? '' : 'calm' }}" ng-click="toggleSpPlan = !toggleSpPlan">
         <i class="big {{ validSpPlan ? 'balanced ion-ios-checkmark' : 'ion-ios-circle-outline' }}"></i>
-        Planning de vos activite Sportive
+        Planifiez votre sport de la semaine
       </div>
       <div class="item item-text-wrap" ng-show="toggleSpPlan">
-        On vous recommande 150 min de sport par semaine
+        Votre 2ème objectif Physis est d’arriver à intégrer dans votre quotidien jusqu’à 150
+        min d’activité sportive. Allez-y progressivement. Fixez-vous un objectif
+        cette semaine et rendez-vous la tâche plus facile en planifiant vos activités. Attention,
+        une fois enregistré, vous ne pourrez pas plus modifier votre planning.
         <label class="item item-input item-select"  ng-show="!validSpPlan">
           <div class="input-label">
             Jour
@@ -97,18 +104,21 @@
         </button>
         <div class="list list-inset" ng-repeat="session in weekSportsPlan track by $index">
           {{ session[0] + " " + session[1] + " Pendant : " + session[2] + " minutes"}}
+          <button class="button button-small button-outline button-assertive ion-close-circled" ng-click="deletePlan($index)"></button>
         </div>
         {{ weekSportsPlanTime ? "Temps d'activite sportive planifie pour cette semaine : " + weekSportsPlanTime + " minutes" : '' }}
         <button class="button button-block button-outline button-balanced"  ng-show="!validSpPlan" ng-click="setSpPlan()">
-          Envoyer
+          Enregistrer
         </button>
       </div>
       <div class="big item {{ validSport ? '' : 'calm' }}" ng-click="toggleSport = !toggleSport">
         <i class="big {{ validSport ? 'balanced ion-ios-checkmark' : 'ion-ios-circle-outline' }}"></i>
-        Sport
+        Une session de sport à entrer ?
       </div>
       <div class="item item-text-wrap" ng-show="toggleSport">
-        <h2 class="energized">Entre le sport fait cette journe</h2>
+        Bravo ! Vous avez effectué une session de sport aujourd’hui !
+        Enregistrez là ici ! Peut importe qu’elle soit inscrite ou non à votre planning
+        de la semaine, vous avez fait du sport!
         <label class="item item-input item-select">
           <div class="input-label">
             Sport
@@ -126,7 +136,7 @@
           </select>
         </label>
         <button class="button button-block button-outline button-balanced" ng-click="setTrack(0,'sportDay')">
-          {{ validSport ? 'Modifier' : 'Envoyer' }}
+          {{ validSport ? 'Modifier' : 'Enregistrer' }}
         </button>
       </div>
       <div class="big item {{ validBF ? '' : 'calm' }}" ng-click="toggleBF = !toggleBF">
@@ -134,7 +144,8 @@
         Petit Déjeuner
       </div>
       <div class="item item-text-wrap" ng-show="toggleBF">
-        Entre les detailles de votre Petit Déjeuner et ajouter une photo !
+        Décrivez votre repas en quelques mots ICI. Vous pouvez
+        également le prendre en photo en cliquant sur l’icone.
         <button  id="BFUpload" name="BFUpload" class="chatUpload ion-image" ng-click="sendimg()">
           <input type="file" accept="image/*" chatupload="fileSelected" id="picfile"
                  name="BFfile" class="upload" ng-model="BFfile"/>
@@ -144,18 +155,18 @@
         </label>
           <div class="assertive centered ion-fork"> Portion</div>
           <div class="button-bar">
-            <button class="button button-outline {{ selectedBF[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 0)">Petit</button>
-            <button class="button button-outline {{ selectedBF[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 0)">Moyen</button>
-            <button class="button button-outline {{ selectedBF[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 0)">Grand</button>
+            <button class="button button-outline {{ selectedBF[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 0)">Petite</button>
+            <button class="button button-outline {{ selectedBF[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 0)">Moyenne</button>
+            <button class="button button-outline {{ selectedBF[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 0)">Grande</button>
           </div>
           <div class="energized centered ion-ios-nutrition"> Qualite du repas</div>
           <div class="button-bar">
-            <button class="button button-outline {{ selectedBF[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 0)">fast food</button>
-            <button class="button button-outline {{ selectedBF[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 0)">fait maison</button>
-            <button class="button button-outline {{ selectedBF[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 0)">Healthy</button>
+            <button class="button button-outline {{ selectedBF[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 0)">Trop gras</button>
+            <button class="button button-outline {{ selectedBF[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 0)">Trop sucré </button>
+            <button class="button button-outline {{ selectedBF[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 0)">Equilibré</button>
           </div>
           <button class="button button-block button-outline button-positive" ng-click="setBF()">
-            {{ validBF ? 'Modifier' : 'Envoyer' }}
+            {{ validBF ? 'Modifier' : 'Enregistrer' }}
           </button>
       </div>
       <div class="big item {{ validLC ? '' : 'calm' }}" ng-click="toggleLC = !toggleLC">
@@ -173,18 +184,18 @@
         </label>
         <div class="assertive centered ion-fork"> Portion</div>
         <div class="button-bar">
-          <button class="button button-outline {{ selectedLC[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 1)">Petit</button>
-          <button class="button button-outline {{ selectedLC[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 1)">Moyen</button>
-          <button class="button button-outline {{ selectedLC[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 1)">Grand</button>
+          <button class="button button-outline {{ selectedLC[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 1)">Petite</button>
+          <button class="button button-outline {{ selectedLC[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 1)">Moyenne</button>
+          <button class="button button-outline {{ selectedLC[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 1)">Grande</button>
         </div>
         <div class="energized centered ion-ios-nutrition"> Qualite du repas</div>
         <div class="button-bar">
-          <button class="button button-outline {{ selectedLC[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 1)">fast food</button>
-          <button class="button button-outline {{ selectedLC[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 1)">fait maison</button>
-          <button class="button button-outline {{ selectedLC[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 1)">Healthy</button>
+          <button class="button button-outline {{ selectedLC[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 1)">Trop gras</button>
+          <button class="button button-outline {{ selectedLC[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 1)">Trop sucré</button>
+          <button class="button button-outline {{ selectedLC[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 1)">Equilibré</button>
         </div>
         <button class="button button-block button-outline button-positive" ng-click="setLC()">
-          {{ validLC ? 'Modifier' : 'Envoyer' }}
+          {{ validLC ? 'Modifier' : 'Enregistrer' }}
         </button>
       </div>
       <div class="big item {{ validDN ? '' : 'calm' }}" ng-click="toggleDN = !toggleDN">
@@ -202,18 +213,18 @@
         </label>
         <div class="assertive centered ion-fork"> Portion</div>
         <div class="button-bar">
-          <button class="button button-outline {{ selectedDN[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 2)">Petit</button>
-          <button class="button button-outline {{ selectedDN[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 2)">Moyen</button>
-          <button class="button button-outline {{ selectedDN[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 2)">Grand</button>
+          <button class="button button-outline {{ selectedDN[0] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(0, 2)">Petite</button>
+          <button class="button button-outline {{ selectedDN[1] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(1, 2)">Moyenne</button>
+          <button class="button button-outline {{ selectedDN[2] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(2, 2)">Grande</button>
         </div>
         <div class="energized centered ion-ios-nutrition"> Qualite du repas</div>
         <div class="button-bar">
-          <button class="button button-outline {{ selectedDN[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 2)">fast food</button>
-          <button class="button button-outline {{ selectedDN[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 2)">fait maison</button>
-          <button class="button button-outline {{ selectedDN[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 2)">Healthy</button>
+          <button class="button button-outline {{ selectedDN[3] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(3, 2)">Trop gras </button>
+          <button class="button button-outline {{ selectedDN[4] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(4, 2)">Trop sucré </button>
+          <button class="button button-outline {{ selectedDN[5] ? 'button-balanced' : 'button-dark' }}" ng-click="updateChoice(5, 2)">Equilibré</button>
         </div>
         <button class="button button-block button-outline button-positive" ng-click="setDN()">
-          {{ validDN ? 'Modifier' : 'Envoyer' }}
+          {{ validDN ? 'Modifier' : 'Enregistrer' }}
         </button>
       </div>
     </div>

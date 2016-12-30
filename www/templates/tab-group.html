@@ -1,4 +1,4 @@
-<ion-view view-title="Group">
+<ion-view view-title="Groupe">
   <ion-content ng-controller="GroupCtrl">
     <div class="card">
       <div class="group-top" ng-repeat="uid in Guids track by $index">
@@ -15,14 +15,18 @@
         <img class="chatimg" ng-show="message.img" ng-src="{{ message.img }}"></img>
       </li>
     </div>
-    <div class="item fixed-bottom item-input-inset">
-      <label class="item-input-wrapper">
-        <input type="text" id="message" name="message" ng-model="coachMessage" placeholder="Message">
-      </label>
-      <button class="button button-small" ng-click="send()">
-        Envoyer
-      </button>
-      <button  class="button button-small ion-image" ng-click="takePhoto()"></button>
-    </div>
+    x<br/>
   </ion-content>
+  <div ng-controller="inputCtrl" class="item fixed-bottom item-input-inset">
+    <label class="item-input-wrapper">
+      <input type="text" id="message" name="message" ng-model="message" placeholder="Message">
+    </label>
+    <button class="button button-small" ng-click="sendMsg(0)">
+      Envoyer
+      </button>
+      <button  id="chatUpload" name="chatUpload" class="chatUpload ion-image" ng-click="choosePhoto()">
+        <input ng-show="!camera" type="file" accept="image/*" chatupload="fileSelected" id="picfile"
+               name="chatfile" class="upload" ng-model="chatfile"/>
+      </button>
+  </div>
 </ion-view>
