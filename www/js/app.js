@@ -35,7 +35,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       .state('tab', {
         url: '/tab',
         abstract: true,
-        templateUrl: 'templates/tabs.html'
+        templateUrl: 'templates/tabs.html',
+        onEnter: function($state, sFirebase){
+          if(!sFirebase.data.firebase.uid){
+            $state.go('login');
+          }
+        }
       })
 
     // Each tab has its own nav history stack:
@@ -84,24 +89,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         }
       })
 
-      .state('tab.login', {
-        url: '/login',
-        views: {
-          'tab-account': {
-            templateUrl: 'templates/acc-login.html',
-          }
-        }
-      })
-
-      .state('tab.register', {
-        url: '/register',
-        views: {
-          'tab-account': {
-            templateUrl: 'templates/acc-register.html',
-          }
-        }
-      })
-
       .state('tab.edit', {
         url: '/account/edit',
         views: {
@@ -111,7 +98,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         }
       })
 
+      .state('login', {
+          url: '/login',
+	  templateUrl: 'templates/acc-login.html',
+      })
+
+      .state('register', {
+          url: '/register',
+	  templateUrl: 'templates/acc-register.html',
+      })
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/login');
+  $urlRouterProvider.otherwise('/login');
 });

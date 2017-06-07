@@ -4,12 +4,28 @@ angular.module('starter.services', ['ionic','firebase'])
     var fncError = function(error) {
       console.log(error.code + " : " + error.message)
     }
-    Database = firebase.database()
-    Time = new Date()
-    TimeFirst =  Time.getDate() - Time.getDay()//First Day of the week
-    var data = { firebase: false, profilePic: false, track: false, user: false, group: false, coach: false }
-    var callback = { tracking: false, progress: false, coach : false}
+    Database = firebase.database();
+    Time = new Date();
+    TimeFirst =  Time.getDate() - Time.getDay();//First Day of the week
+    var data = { firebase: { uid: false, register: false, ready: false }, profilePic: false, track: false, user: false, group: false, coach: false };
+    var callback = { tracking: false, progress: false, coach : false};
     var userRequest = (function() {
+      if (data.firebase.register === true)
+      {
+        Database.ref('users/' + data.firebase.uid).set({
+          name: data.user.name,
+          email: data.user.email,
+          age: data.user.age,
+          bio: data.user.bio,
+          gid: "false"
+        });
+        var profileRef = firebase.storage().ref().child('profile_pic/' + data.firebase.uid);
+        profileRef.put(data.user.profilePic).then(function (snapshot) {
+        }).catch(function (error) {
+          console.log(error.code + " : " + error.message);
+          alert(error.message);
+        });
+      }
       Database.ref('/users/' + data.firebase.uid).once('value').then(function(snapshot) {
         data.user = {
           name: snapshot.val().name,
@@ -21,8 +37,9 @@ angular.module('starter.services', ['ionic','firebase'])
           gid: snapshot.val().gid,
           healthy: snapshot.val().healthy
         }
-        data.user.ready = true
-        groupRequest()
+        data.user.ready = true;
+        if (data.group === false)
+          groupRequest();
         firebase.storage().ref('profile_pic/' + data.firebase.uid).getDownloadURL().then(function(url) {
           data.user.profilePic = url // Insert url into an <img> tag to "download"
           data.profilePic = { ready: true }
@@ -32,7 +49,7 @@ angular.module('starter.services', ['ionic','firebase'])
       }).catch(function (error) {
         console.log(error.code + " : " + error.message)
       })
-    })
+    });
     var trackRequest = (function() {
       data.track = {
         days: {},
@@ -59,17 +76,17 @@ angular.module('starter.services', ['ionic','firebase'])
           var frDate = day.split("-")
           var elemDate = new Date(frDate[0], (frDate[1]-1), frDate[2])
           var snapshotChild = data.track.days[day]
-          if (snapshotChild.weight != undefined)
+          if (snapshotChild.weight !== undefined)
             data.track.lWeight = snapshotChild.weight
-          if (elemDate.getMonth()+1 == Time.getMonth()+1
+          if (elemDate.getMonth()+1 === Time.getMonth()+1
               && elemDate.getDate() >= TimeFirst && elemDate.getDate() <= TimeFirst + 6)
           {
-            if (snapshotChild.sportDay != undefined)
+            if (snapshotChild.sportDay !== undefined)
             {
               data.track.weekSportsTime += Number(snapshotChild.sportDay[1])
               data.track.weekSports.push(snapshotChild.sportDay)
             }
-            if (snapshotChild.weekSportsPlan != null)
+            if (snapshotChild.weekSportsPlan !== null)
             {
               data.track.weekSportsPlanTime = 0
               data.track.weekSportsPlan = snapshotChild.weekSportsPlan
@@ -77,24 +94,24 @@ angular.module('starter.services', ['ionic','firebase'])
                 data.track.weekSportsPlanTime += Number(snapshotChild.weekSportsPlan[index][2])
             }
           }
-          if (lastWeek == false || (elemDate.getMonth()+1 != lastWeek.getMonth()+1
+          if (lastWeek === false || (elemDate.getMonth()+1 !== lastWeek.getMonth()+1
                                     || elemDate.getDate() <= lastWeekFirst || elemDate.getDate() >= lastWeekFirst + 6))
           {
             lastWeek = elemDate
             lastWeekFirst = lastWeek.getDate() - lastWeek.getDay()
-            if (snapshotChild.weight != undefined)
+            if (snapshotChild.weight !== undefined)
               data.track.weighings[elemDate] = Number(snapshotChild.weight)
-            if (data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] == undefined)
+            if (data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] === undefined)
               data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] = 0
-            if (snapshotChild.sportDay != undefined)
+            if (snapshotChild.sportDay !== undefined)
               data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] += Number(snapshotChild.sportDay[1])
           }
         }
         var timeDiff = Math.abs(Time.getTime() - elemDate.getTime());
         data.track.streak = Math.ceil(timeDiff / (1000 * 3600 * 24)) - 1;
-        if (callback.progress != false)
+        if (callback.progress !== false)
           callback.progress()
-        if (callback.tracking != false)
+        if (callback.tracking !== false)
           callback.tracking()
       }
       var refTracking = Database.ref('/users/' + data.firebase.uid + '/track/')
@@ -113,7 +130,7 @@ angular.module('starter.services', ['ionic','firebase'])
       var refConversation = Database.ref('groups/' + data.user.gid + '/messages/').limitToLast(40)
       var fncConversation = function(snapshot) {
         var index = data.group.conversation.push(snapshot.val()) - 1
-        if (data.group.conversation[index].name == data.user.name)
+        if (data.group.conversation[index].name === data.user.name)
         {
           data.group.conversation[index].style = "right"
           data.group.conversation[index].color = "calm"
@@ -121,66 +138,66 @@ angular.module('starter.services', ['ionic','firebase'])
         else
           data.group.conversation[index].color = "assertive"
       }
-      refConversation.orderByKey().on('child_added', fncConversation)
-      refConversation.orderByKey().on('child_changed', fncConversation)
-      Database.ref('/groups/' + data.user.gid).once('value').then(function(snapshot) {
-        data.group.uids = snapshot.val().uids
-        data.group.coach = snapshot.val().coach
-        coachRequest()
-        for (var uid in data.group.uids) {
-          Database.ref('/users/' + uid + "/name").once('value').then(function(snapshot) {
-            data.group.names.push(snapshot.val())
-          }).catch(fncError)
-          var ref = firebase.storage().ref('profile_pic/' + uid);
-          ref.getDownloadURL().then(function(url) {
-            data.group.profilePics.push(url)
-          }).catch(fncError)
-        }
-        data.group.ready = true
-      }).catch(fncError)
-    })
+      refConversation.orderByKey().on('child_added', fncConversation);
+      refConversation.orderByKey().on('child_changed', fncConversation);
+      if (data.user.gid === false) {
+        Database.ref('/groups/' + data.user.gid).once('value').then(function (snapshot) {
+          data.group.uids = snapshot.val().uids;
+          data.group.coach = snapshot.val().coach;
+          coachRequest();
+          for (var uid in data.group.uids) {
+            Database.ref('/users/' + uid + "/name").once('value').then(function (snapshot) {
+              data.group.names.push(snapshot.val())
+            }).catch(fncError);
+            var ref = firebase.storage().ref('profile_pic/' + uid);
+            ref.getDownloadURL().then(function (url) {
+              data.group.profilePics.push(url)
+            }).catch(fncError)
+          }
+          data.group.ready = true
+        }).catch(fncError)
+      }
+    });
     var coachRequest = (function() {
-      var refConversation = Database.ref('coach/' + data.group.coach + '/conversations/' + data.firebase.uid)
+      var refConversation = Database.ref('coach/' + data.group.coach + '/conversations/' + data.firebase.uid);
       data.coach = {
         name: "",
         profilePic: "",
         conversation: {}
       }
       var fncConversation = function(snapshot) {
-        var value = snapshot.val()
-        if (value.name == data.user.name)
+        var value = snapshot.val();
+        if (value.name === data.user.name)
         {
-          value.style = "right"
-          value.color = "calm"
+          value.style = "right";
+          value.color = "calm";
         }
         else
           value.color = "assertive"
         data.coach.conversation[snapshot.getKey()] = value
-        if (callback.coach != false)
+        if (callback.coach !== false)
           callback.coach()
-      }
+      };
       refConversation.orderByKey().limitToLast(40).on('child_added', fncConversation)
       refConversation.orderByKey().limitToLast(40).on('child_changed', fncConversation)
       Database.ref('coach/' + data.group.coach + '/name').once('value').then(function(snapshot) {
         data.coach.name = snapshot.val()
         var ref = firebase.storage().ref('profile_pic/' + data.group.coach);
         ref.getDownloadURL().then(function(url) {
-          data.coach.profilePic = url
+          data.coach.profilePic = url;
           data.coach.ready = true
         }).catch(fncError)
       }).catch(fncError)
-    })
+    });
     firebase.auth().onAuthStateChanged(function(user) {
-        console.log("State of Auth Changed");
-        if (user != null) {
-          data.firebase = { uid: user.uid }
-          console.log("User logged : " + user.uid)
-          userRequest()
-          trackRequest()
+      if (user !== null) {
+        data.firebase.uid = user.uid;
+        data.firebase.ready = true;
+        userRequest();
+        trackRequest();
         $location.path('/tab/account');
       } else {
-        $location.path('/tab/login')
-        console.log("Not loged")
+        $location.path('/tab/login');
       }
     });
     return {
@@ -190,7 +207,7 @@ angular.module('starter.services', ['ionic','firebase'])
         Database.ref('/users/' + data.firebase.uid + '/track/' + date + '/' + name).set(value);
       }),
       sendMessage: (function (scope,who) {
-        if (scope.message == undefined && scope.img == undefined)
+        if (scope.message === undefined && scope.img === undefined)
           return
         console.log("Sending : " + Time.getTime() + ", " + scope.message + ", " + scope.img);
         var ref = Database.ref('groups/' + data.user.gid + '/messages/')
@@ -203,40 +220,28 @@ angular.module('starter.services', ['ionic','firebase'])
           img: scope.img
         });
       }),
-      login: (function (email, password, sFirebase) {
+      login: (function (email, password) {
         console.log('login with ' + email);
         firebase.auth().signInWithEmailAndPassword(email, password).then(function(error) {
-          console.log("Logedin redirecting")
+          console.log("Logedin redirecting");
         }).catch(function(error) {
-          console.log(error.code + " : " + error.message)
+          console.log(error.code + " : " + error.message);
           alert(error.message)
+        });
+      }),
+      disconnect: (function () {
+        firebase.auth().signOut().then(function() {
+          data = { firebase: false, profilePic: false, track: false, user: false, group: false, coach: false };
+        }, function(error) {
         });
       }),
       register: (function (sFirebase, $scope) {
-        console.log('register process...')
+        data.firebase.register = true;
         firebase.auth().createUserWithEmailAndPassword($scope.email, $scope.passwordP).then(function(error) {
-          sFirebase.accountInit($scope.email, $scope.name, $scope.age, $scope.bio, $scope.fileSelected)
           console.log("Logedin redirecting");
         }).catch(function(error) {
-          console.log(error.code + " : " + error.message)
-          alert(error.message)
-        });
-      }),
-      accountInit: (function (email, name, age, bio, pic) {
-        console.log('init user data ...')
-        Database.ref('users/' + data.firebase.uid).set({
-          name: name,
-          email: email,
-          age: age,
-          bio: bio,
-          gid: "false"
-        });
-        var profileRef = firebase.storage().ref().child('profile_pic/' + data.firebase.uid);
-        profileRef.put(pic).then(function(snapshot) {
-          console.log('Uploaded file.');
-        }).catch(function(error) {
-          console.log(error.code + " : " + error.message)
-          alert(error.message)
+          console.log(error.code + " : " + error.message);
+          alert(error.message);
         });
       })
     }

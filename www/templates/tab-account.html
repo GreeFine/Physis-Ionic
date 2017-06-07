@@ -1,5 +1,11 @@
 <ion-view view-title="Mon profile">
+  <ion-nav-buttons side="right">
+    <button class="button" ng-click="disconnect()" ng-controller="DisconnectCtrl">
+      Deconnection
+    </button>
+  </ion-nav-buttons>
   <ion-content ng-controller="AccountCtrl">
+
     <ion-nav-buttons side="right">
       <button class="button" ng-click="disconnect()">
         Deconnexion
