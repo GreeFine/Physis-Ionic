@@ -32,7 +32,7 @@ angular.module('starter.services', ['ionic','firebase'])
           email: snapshot.val().email,
           age: snapshot.val().age,
           bio: snapshot.val().bio,
-          fWeight: snapshot.val().fweight,
+          FWeight: snapshot.val().FWeight,
           programStart: snapshot.val().programStart,
           gid: snapshot.val().gid,
           healthy: snapshot.val().healthy
@@ -50,76 +50,88 @@ angular.module('starter.services', ['ionic','firebase'])
         console.log(error.code + " : " + error.message)
       })
     });
+
     var trackRequest = (function() {
       data.track = {
         days: {},
-        weighings: [],
-        streak: 0,
-        lWeight: 0,
+        weekWeighings: [],
+        // streak: 0,  //Unused
+        // lWeight: 0, //Unused
         weekSports: [],
         weekSportsTime: 0,
         weekSportsPlan: [],
       }
+
+      data.track.weekWeighings = [];
       var fnc = function(snapshot) {
-        data.track.days[snapshot.getKey()] = snapshot.val()
-        data.track.weighings = []
-        data.track.streak = 0
-        data.track.lWeight = 0
-        data.track.weekSports = []
-        data.track.weekSportsTime = 0
-        data.track.weekSportsPlan = []
-        data.track.weeksSports = {}
+        data.track.days[snapshot.getKey()] = snapshot.val();
+        // data.track.streak = 0; //Unused
+        // data.track.lWeight = 0; //Unused
+        data.track.weekSports = [];
+        data.track.weekSportsTime = 0;
+        data.track.weekSportsPlan = [];
+        data.track.weeksSports = {};
+        var lastWeekFirst = false;
+        var lastWeek = false;
+
         for (var day in data.track.days)
         {
-          var lastWeekFirst = false
-          var lastWeek = false
-          var frDate = day.split("-")
-          var elemDate = new Date(frDate[0], (frDate[1]-1), frDate[2])
-          var snapshotChild = data.track.days[day]
-          if (snapshotChild.weight !== undefined)
-            data.track.lWeight = snapshotChild.weight
-          if (elemDate.getMonth()+1 === Time.getMonth()+1
-              && elemDate.getDate() >= TimeFirst && elemDate.getDate() <= TimeFirst + 6)
+          var frDate = day.split("-");
+          var elemDate = new Date(frDate[0], frDate[1]-1, frDate[2]);
+          var snapshotChild = data.track.days[day];
+          // if (snapshotChild.weight !== undefined)
+          //   data.track.lWeight = snapshotChild.weight;
+
+          // Current Week tracking
+          if (elemDate.getMonth() === Time.getMonth() &&
+              elemDate.getDate() >= TimeFirst && elemDate.getDate() <= TimeFirst + 6)
           {
             if (snapshotChild.sportDay !== undefined)
             {
-              data.track.weekSportsTime += Number(snapshotChild.sportDay[1])
-              data.track.weekSports.push(snapshotChild.sportDay)
-            }
-            if (snapshotChild.weekSportsPlan !== null)
+              data.track.weekSportsTime += Number(snapshotChild.sportDay[1]);
+              data.track.weekSports.push(snapshotChild.sportDay);
+            };
+            if (snapshotChild.weekSportsPlan !== undefined)
             {
-              data.track.weekSportsPlanTime = 0
-              data.track.weekSportsPlan = snapshotChild.weekSportsPlan
+              data.track.weekSportsPlanTime = 0;
+              data.track.weekSportsPlan = snapshotChild.weekSportsPlan;
               for (var index in snapshotChild.weekSportsPlan)
-                data.track.weekSportsPlanTime += Number(snapshotChild.weekSportsPlan[index][2])
+                data.track.weekSportsPlanTime += Number(snapshotChild.weekSportsPlan[index][2]);
             }
           }
-          if (lastWeek === false || (elemDate.getMonth()+1 !== lastWeek.getMonth()+1
-                                    || elemDate.getDate() <= lastWeekFirst || elemDate.getDate() >= lastWeekFirst + 6))
+
+          // Weeks tracking
+          if (lastWeek === false || elemDate.getMonth() !== lastWeek.getMonth() ||
+              elemDate.getDate() <= lastWeekFirstD || elemDate.getDate() >= lastWeekFirstD + 6)
           {
-            lastWeek = elemDate
-            lastWeekFirst = lastWeek.getDate() - lastWeek.getDay()
+            var elemDate_varName = elemDate.getMonth() + "-" + elemDate.getDate();
+            lastWeek = elemDate;
+            lastWeekFirstD = lastWeek.getDate() - lastWeek.getDay();
+            //TODO got -1 in lastWeekFirst rebuild week data system
             if (snapshotChild.weight !== undefined)
-              data.track.weighings[elemDate] = Number(snapshotChild.weight)
-            if (data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] === undefined)
-              data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] = 0
+              data.track.weekWeighings[elemDate_varName] = Number(snapshotChild.weight);
+            if (data.track.weeksSports[elemDate_varName] === undefined)
+              data.track.weeksSports[elemDate_varName] = 0;
             if (snapshotChild.sportDay !== undefined)
-              data.track.weeksSports[(elemDate.getMonth()+1) + "-" + elemDate.getDate()] += Number(snapshotChild.sportDay[1])
-          }
-        }
-        var timeDiff = Math.abs(Time.getTime() - elemDate.getTime());
-        data.track.streak = Math.ceil(timeDiff / (1000 * 3600 * 24)) - 1;
+              data.track.weeksSports[elemDate_varName] += Number(snapshotChild.sportDay[1]);
+          };
+        };
+
+        // var timeDiff = Math.abs(Time.getTime() - elemDate.getTime());
+        // data.track.streak = Math.ceil(timeDiff / (1000 * 3600 * 24)) - 1;
         if (callback.progress !== false)
-          callback.progress()
+          callback.progress();
         if (callback.tracking !== false)
-          callback.tracking()
-      }
-      var refTracking = Database.ref('/users/' + data.firebase.uid + '/track/')
-      refTracking.off()
-      refTracking.orderByKey().on('child_added', fnc)
-      refTracking.orderByKey().on('child_changed', fnc)
-      data.track.ready = true
+          callback.tracking();
+      };
+
+      var refTracking = Database.ref('/users/' + data.firebase.uid + '/track/');
+      refTracking.off();
+      refTracking.orderByKey().on('child_added', fnc);
+      refTracking.orderByKey().on('child_changed', fnc);
+      data.track.ready = true;
    })
+
     var groupRequest = (function() {
       data.group = {
         uids: [],
@@ -205,6 +217,8 @@ angular.module('starter.services', ['ionic','firebase'])
       callback: callback,
       trackingSet: (function (name, value, date) {
         Database.ref('/users/' + data.firebase.uid + '/track/' + date + '/' + name).set(value);
+        if (data.user.FWeight === undefined && name === "weight")
+          Database.ref('/users/' + data.firebase.uid + "/FWeight").set(value);
       }),
       sendMessage: (function (scope,who) {
         if (scope.message === undefined && scope.img === undefined)

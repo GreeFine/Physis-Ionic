@@ -22,8 +22,8 @@
       </li>
       <div ng-show="select == 1">
         <div class="item button-bar">
-          <button class="button button-calm {{ select2 ? '' : 'button-outline' }}" ng-click="select2 = true;updateChart()">Semaines</button>
-          <button class="button button-calm {{ !select2 ? '' : 'button-outline' }}" ng-click="select2 = false;updateChart()">Mois</button>
+          <button class="button button-calm {{ select2 ? '' : 'button-outline' }}" ng-click="select2 = true;updateWeighChart()">Semaines</button>
+          <button class="button button-calm {{ !select2 ? '' : 'button-outline' }}" ng-click="select2 = false;updateWeighChart()">Mois</button>
         </div>
         <li class="item">
           <canvas id="chartWeight"></canvas>
@@ -39,17 +39,17 @@
             <div class="col">
               <div class="col">
                 <h3>1ère pesée</h3>
-                {{ FWeight }}
+                {{ FWeight || "Aucune" }}
               </div>
               <div class="col">
                 <h3>Poids perdu</h3>
-                {{ FWeight - LWeight}}
+                {{ FWeight - LWeight }}
               </div>
             </div>
             <div class="col">
               <div class="col">
                 <h3>Votre objectif fixé par Physis</h3>
-                {{ FWeight * 0.9 }}
+                {{ FWeight * 0.9 || "Aucun" }}
               </div>
               <div class="col">
                 <h3>Dernière pesée en date</h3>

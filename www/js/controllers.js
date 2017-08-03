@@ -31,6 +31,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     $scope.selectedSp = [];
     var selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
         + (d.getDate() > 9 ?  d.getDate() : '0' + d.getDate());
+
     $scope.changeDate = function(nb) {
       d.setDate(d.getDate() + nb);
       selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
@@ -40,6 +41,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       $scope.month = d.getMonth()+1;
       $scope.updateTrack()
     }
+
     $scope.setSpPlan = function() {
       if ($scope.weekSportsPlan.length > 0)
       {
@@ -57,6 +59,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       else
         alert("Votre planning d'activite est vide")
     };
+
     $scope.addSpPlan = function() {
       if ($scope.planDay !== null && $scope.planSport !== null
           && $scope.planPeriod !== undefined)
@@ -65,6 +68,8 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         if ($scope.weekSportsPlanTime === undefined)
           $scope.weekSportsPlanTime = 0;
         $scope.weekSportsPlanTime += Number($scope.planPeriod);
+
+        //RESET Fields
         $scope.planDay = undefined;
         $scope.planSport = undefined;
         $scope.planPeriod = undefined;
@@ -72,9 +77,11 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       else
         alert("Sport description is incomplete");
     }
+
     $scope.deletePlan = function(index) {
       $scope.weekSportsPlan.splice(index, 1);
     }
+
     $scope.updateChoice = function(nb, type) {
       var meals = [$scope.selectedBF, $scope.selectedLC, $scope.selectedDN]
       meals[type][Math.floor(nb / 3) * 3] = null
@@ -82,14 +89,16 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       meals[type][Math.floor(nb / 3) * 3 + 2] = null
       meals[type][nb] = true
     }
+
     $scope.updateTrack = function() {
       trackingDay($scope)
     }
+
     $scope.setTrack = function(elem, name) {
       if (name === "weight" && elem > 0)
       {
         $scope.toggleWeight = false
-        sFirebase.trackingSet(name, elem, selectedDate)
+        sFirebase.trackingSet(name, elem, selectedDate);
       }
       else if (name === "steps" && elem > 0)
       {
@@ -104,49 +113,54 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         $scope.toggleSport = false
         }
     };
+
     $scope.setBF = function() {
-      var count = 0
+      var count = 0;
       for (var e in $scope.selectedBF)
         if ($scope.selectedBF[e] !== null)
-          count += 1
+          count += 1;
       if (count === 2 && $scope.iDescBF !== undefined && $scope.iDescBF.length > 0) {
-        sFirebase.trackingSet("breakFast", [$scope.selectedBF, $scope.iDescBF], selectedDate)
-        $scope.validBF = true
-        $scope.toggleBF = false
+        sFirebase.trackingSet("breakFast", [$scope.selectedBF, $scope.iDescBF], selectedDate);
+        $scope.validBF = true;
+        $scope.toggleBF = false;
       }
       else
-        alert("La description de votre repas est incomplete")
-    }
+        alert("La description de votre repas est incomplete");
+    };
+
     $scope.setLC = function() {
-      var count = 0
+      var count = 0;
       for (var e in $scope.selectedLC)
         if ($scope.selectedLC[e] !== null)
-          count += 1
+          count += 1;
       if (count === 2 && $scope.iDescLC !== undefined && $scope.iDescLC.length > 0)
       {
-        sFirebase.trackingSet("lunch", [$scope.selectedLC, $scope.iDescLC], selectedDate)
-        $scope.validLC = true
-        $scope.toggleLC = false
+        sFirebase.trackingSet("lunch", [$scope.selectedLC, $scope.iDescLC], selectedDate);
+        $scope.validLC = true;
+        $scope.toggleLC = false;
       }
       else
-        alert("La description de votre repas est incomplete")
+        alert("La description de votre repas est incomplete");
     }
+
     $scope.setDN = function() {
-      var count = 0
+      var count = 0;
       for (var e in $scope.selectedDN)
         if ($scope.selectedDN[e] !== null)
-          count += 1
+          count += 1;
       if (count === 2 && $scope.iDescDN !== undefined  && $scope.iDescDN.length > 0)
       {
-        sFirebase.trackingSet("diner", [$scope.selectedDN, $scope.iDescDN], selectedDate)
-        $scope.validDN = true
-        $scope.toggleDN = false
+        sFirebase.trackingSet("diner", [$scope.selectedDN, $scope.iDescDN], selectedDate);
+        $scope.validDN = true;
+        $scope.toggleDN = false;
       }
       else
-        alert("La description de votre repas est incomplete")
+        alert("La description de votre repas est incomplete");
     }
+
     var trackingDay = function (scope) {
-      if (sFirebase.data.track.days[selectedDate] === undefined)
+      var val = sFirebase.data.track.days[selectedDate];
+      if (val === undefined)
       {
         scope.iweight = 0;
         scope.validWeight = false;
@@ -164,9 +178,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       }
       else
       {
-        var val = sFirebase.data.track.days[selectedDate];
-        if (val !== null) {
-          if (val.weight > 0) {
+          if (val.weight !== undefined) {
             scope.iweight = val.weight;
             scope.validWeight = true
           } else {
@@ -175,7 +187,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           }
 
           //Steps
-          if (val.steps > 0) {
+          if (val.steps !== undefined) {
             scope.isteps = val.steps;
             if (val.steps >= 8000)
               scope.validSteps = true;
@@ -187,7 +199,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           }
 
           //Sport
-          if (val.sportDay !== null) {
+          if (val.sportDay !== undefined) {
             scope.iTimeSp = val.sportDay[1];
             scope.selectedSp = val.sportDay[0];
             scope.validSport = true
@@ -199,7 +211,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
           // Break Fast
           scope.validBF = true;
-          if (val.breakFast !== null)
+          if (val.breakFast !== undefined)
           {
             scope.selectedBF = val.breakFast[0];
             scope.iDescBF = val.breakFast[1]
@@ -208,57 +220,59 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           {
             scope.validBF = false;
             scope.selectedBF = [];
-            scope.iDescBF = undefined
+            scope.iDescBF = undefined;
           }
 
           // Lunch
           scope.validLC = true;
-          if (val.lunch !== null)
+          if (val.lunch !== undefined)
           {
             scope.selectedLC = val.lunch[0];
-            scope.iDescLC = val.lunch[1]
+            scope.iDescLC = val.lunch[1];
           }
           else
           {
             scope.validLC = false;
             scope.selectedLC = [];
-            scope.iDescLC = undefined
+            scope.iDescLC = undefined;
           }
 
           // DINER
-          scope.validDN = true
-          if (val.diner !== null)
+          scope.validDN = true;
+          if (val.diner !== undefined)
           {
-            scope.selectedDN = val.diner[0]
-            scope.iDescDN = val.diner[1]
+            scope.selectedDN = val.diner[0];
+            scope.iDescDN = val.diner[1];
           }
           else
           {
-            scope.selectedDN = []
-            scope.validDN = false
-            scope.iDescDN = undefined
+            scope.selectedDN = [];
+            scope.validDN = false;
+            scope.iDescDN = undefined;
           }
-        }
       }
+
       if (sFirebase.data.track.weekSportsPlan.length > 0)
       {
-        scope.weekSportsPlan = sFirebase.data.track.weekSportsPlan
-        scope.validSpPlan = true
+        scope.weekSportsPlan = sFirebase.data.track.weekSportsPlan;
+        scope.validSpPlan = true;
       }
       else
-        scope.weekSportsPlan = []
-    }
-    var headerDisplay = function() {
-      var programStartD = new Date(sFirebase.data.user.programStart)
-      $scope.userPic = sFirebase.data.user.profilePic
-      $scope.programTime = Math.round((d-programStartD)/ 604800000);
-      $scope.progress = (sFirebase.data.user.fWeight - sFirebase.data.track.lWeight) / (sFirebase.data.user.fWeight * 0.1)
-      $scope.circle.animate($scope.progress)
-    }
+        scope.weekSportsPlan = [];
+    };
 
-    sFirebase.callback.tracking = (function() { trackingDay($scope) })
+    var headerDisplay = function() {
+      var programStartD = new Date(sFirebase.data.user.programStart);
+      $scope.userPic = sFirebase.data.user.profilePic;
+      $scope.programTime = Math.round((d-programStartD)/ 604800000);
+      $scope.progress = (sFirebase.data.user.FWeight - sFirebase.data.track.lWeight) / (sFirebase.data.user.FWeight * 0.1);
+      $scope.circle.animate($scope.progress);
+    };
+
+    sFirebase.callback.tracking = (function() { trackingDay($scope) });
     var id1 = $interval(function() {
       waitready(sFirebase.data.track, sFirebase.callback.tracking, id1, $interval)}, 100);
+
     var id2 = $interval(function() {
       waitready(sFirebase.data.profilePic,
                 headerDisplay, id2, $interval)}, 100);
@@ -270,16 +284,16 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
   .controller('GroupCtrl', function($scope, $interval, sFirebase, $cordovaCamera) {
     var groupDisplay = function(scope) {
-      scope.Gnames = sFirebase.data.group.gNames
-      scope.conversation = sFirebase.data.group.conversation
-      scope.Guids = sFirebase.data.group.uids
-      scope.GprofilePic = sFirebase.data.group.profilePics
-      scope.Gnames = sFirebase.data.group.names
+      scope.Gnames = sFirebase.data.group.gNames;
+      scope.conversation = sFirebase.data.group.conversation;
+      scope.Guids = sFirebase.data.group.uids;
+      scope.GprofilePic = sFirebase.data.group.profilePics;
+      scope.Gnames = sFirebase.data.group.names;
     }
     var id1 = $interval(function() {
       waitready(sFirebase.data.group, sFirebase.callback.groupDisplay,
                 id1, $interval)}, 500);
-    sFirebase.callback.groupDisplay = (function() { groupDisplay($scope) })
+    sFirebase.callback.groupDisplay = (function() { groupDisplay($scope) });
   })
 
   .controller('AccountCtrl', function($scope, $interval, sFirebase) {
@@ -381,7 +395,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 	  })
     Chart.defaults.global.defaultFontSize = 20;
     var configWeight = {
-      labels: ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4', 'Semaine 5', 'Semaine 6'],
+      labels: [],
       datasets: [
         {
           label: "Ma courbe de poids",
@@ -463,12 +477,12 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     $scope.weighings = [1, 1, 1];
     $scope.healthy = [1, 1, 1];
     $scope.weeks = [1, 2, 3, 4, 5, 6];
+
     $scope.chartWeightUp = function () {
       if ($scope.chartWeight !== undefined)
         $scope.chartWeight.destroy()
-      configWeight.datasets.data = []
-      for (var i in $scope.weighings)
-        configWeight.datasets.data += $scope.weighings[i][0]
+      configWeight.datasets[0].data = $scope.weighings;
+
       $scope.chartWeight = new Chart("chartWeight", {
         type: 'line',
         data: configWeight,
@@ -477,7 +491,8 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           backgroundColor: '#cc65fe'
         }
       });
-    }
+    };
+
     var weeksUp = function() {
       for (var n in $scope.chartWeeks)
       {
@@ -510,11 +525,12 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 			      }
           }
         });
-        $scope.chartWeeks[n].data.datasets[0].data = [ $scope.weeksSports[e], 150 - $scope.weeksSports[e] ]
-        $scope.chartWeeks[n].update()
-        ++n
+        $scope.chartWeeks[n].data.datasets[0].data = [ $scope.weeksSports[e], 150 - $scope.weeksSports[e] ];
+        $scope.chartWeeks[n].update();
+        ++n;
       }
-    }
+    };
+
     $scope.chartSportUp = function () {
       if ($scope.chartSport !== undefined)
         $scope.chartSport.destroy()
@@ -541,7 +557,8 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         }
       });
       setTimeout(weeksUp, 500);
-    }
+    };
+
     $scope.chartHealthyUp = function () {
       if ($scope.healthy === undefined)
         $scope.healthy = [0, 0, 0];
@@ -557,72 +574,81 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         }
       });
     };
-    $scope.select = 1;
-    $scope.select2 = true;
-    $scope.chartWeightUp();
-    $scope.chartSportUp();
-    $scope.chartHealthyUp();
-    var weighingsScale = function(scope) {
-      scope.weighings = [];
-      var track = sFirebase.data.track;
-      var date;
-      var lastDate = false;
-      for (var e in track.weighings)
-      {
-        date = new Date(e);
-        if ((scope.select2 && lastDate !== ((date.getMonth()+1) + '-' + (date.getDate() - date.getDay())))
-            || (!scope.select2 && lastDate !== (date.getMonth()+1)))
-        {
-          if (scope.select2)
-            lastDate = ((date.getMonth()+1) + '-' + (date.getDate() - date.getDay()));
-          else
-            lastDate = date.getMonth()+1;
-          scope.weighings.push(track.weighings[e])
-        }
-      }
-      scope.chartWeight.data.datasets[0].data = scope.weighings
-      scope.chartWeight.update()
+
+    $scope.updateWeighChart = function() {
+      //TODO update from week to month;
     };
-    $scope.updateChart = function() { weighingsScale($scope) };
-    var displayUser = function (scope) {
+
+    var displayProgress = function (scope) {
       var track = sFirebase.data.track;
       scope.PrgramStart = sFirebase.data.user.programStart;
-      scope.FWeight = sFirebase.data.user.fWeight;
+
+      scope.FWeight = sFirebase.data.user.FWeight;
       scope.LWeight = track.lWeight;
-      scope.Streak = track.streak;
+      scope.weekSportsPlanTime = sFirebase.data.track.weekSportsPlanTime
+      scope.weekSportsObjectiv = [ track.weekSportsTime, 150 - track.weekSportsTime ];
+      //  scope.Streak = track.streak;
+
+      scope.weighings = sFirebase.data.track.weekWeighings;
+      var length = Object.keys(scope.weighings).length;
+      scope.chartWeight.data.datasets[0].data = [];
+      scope.chartWeight.data.labels = [];
+      for (var w in scope.weighings)
+      {
+        if (length > 10)
+          --length;
+        else {
+            scope.chartWeight.data.datasets[0].data.push(scope.weighings[w]);
+            scope.chartWeight.data.labels.push(w);
+        }
+      }
+      scope.chartWeight.update();
+
       scope.healthy = track.healthy;
       scope.chartHealthy.data.datasets[0].data = track.healthy;
       scope.chartHealthy.update();
-      weighingsScale(scope);
-      scope.weekSportsObjectiv = [ track.weekSportsTime, 150 - track.weekSportsTime ];
+
       scope.weekSportsTime = Math.round(track.weekSportsTime);
       scope.chartSport.data.datasets[0].data = $scope.weekSportsObjectiv;
       scope.chartSport.options.elements.center.text = ($scope.weekSportsTime + " minutes effectuées");
       scope.chartSport.update();
+
       scope.weeksSports = track.weeksSports;
       var i = 0;
       for (var e in $scope.weeksSports)
       {
-        if (scope.chartWeeks[i] !== undefined)
-        {
-          scope.chartWeeks[i].options.elements.center.text = $scope.weeksSports[e];
-          scope.chartWeeks[i].data.datasets[0].data = $scope.weeksSports[e];
-          scope.chartWeeks[i].update();
-        }
-        ++i
+       if (scope.chartWeeks[i] !== undefined)
+       {
+         scope.chartWeeks[i].options.elements.center.text = $scope.weeksSports[e];
+         scope.chartWeeks[i].data.datasets[0].data = $scope.weeksSports[e];
+         scope.chartWeeks[i].update();
+       }
+       ++i
       }
+
       scope.circle.animate((scope.FWeight - scope.LWeight) / (scope.FWeight * 0.1));
-      scope.weekSportsPlanTime = sFirebase.data.track.weekSportsPlanTime
-    };
+     };
+
+    //START DEFINITION
+    $scope.select = 1; // Selected graph
+    $scope.select2 = true; // Selected mode for weightings
+    $scope.chartWeightUp();
+    $scope.chartSportUp();
+    $scope.chartHealthyUp();
+
+    sFirebase.callback.progress = function() { displayProgress($scope) };
     var id1 = $interval(function() {
       waitready(sFirebase.data.user, (function() {
-        sFirebase.callback.progress = (function() { displayUser($scope) });
-        sFirebase.callback.progress()
-      }), id1, $interval)}, 200);
+        sFirebase.callback.progress();
+      }), id1, $interval);
+    }, 200);
+
     var id2 = $interval(function() {
-      waitready(sFirebase.data.profilePic,
-                (function() { $scope.userPic = sFirebase.data.user.profilePic }),
-                id2, $interval)}, 200);
+      waitready(sFirebase.data.profilePic, (function() {
+        $scope.userPic = sFirebase.data.user.profilePic
+      }), id2, $interval);
+    }, 200);
+
     $scope.circle = new ProgressBar.Circle("#progressBarP", {
       strokeWidth: 10,
       color: '#73BF5A'
