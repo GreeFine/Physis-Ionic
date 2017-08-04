@@ -1,6 +1,6 @@
 angular.module('starter.services', ['ionic','firebase'])
 
-  .factory('sFirebase', function ($location) {
+  .factory('sFirebase', function ($location, $rootScope) {
     var fncError = function(error) {
       console.log(error.code + " : " + error.message)
     }
@@ -8,24 +8,8 @@ angular.module('starter.services', ['ionic','firebase'])
     Time = new Date();
     TimeFirst =  Time.getDate() - Time.getDay();//First Day of the week
     var data = { firebase: { uid: false, register: false, ready: false }, profilePic: false, track: false, user: false, group: false, coach: false };
-    var callback = { tracking: false, progress: false, coach : false};
+    var callback = { tracking: false, progress: false, coach: false, location: false };
     var userRequest = (function() {
-      if (data.firebase.register === true)
-      {
-        Database.ref('users/' + data.firebase.uid).set({
-          name: data.user.name,
-          email: data.user.email,
-          age: data.user.age,
-          bio: data.user.bio,
-          gid: "false"
-        });
-        var profileRef = firebase.storage().ref().child('profile_pic/' + data.firebase.uid);
-        profileRef.put(data.user.profilePic).then(function (snapshot) {
-        }).catch(function (error) {
-          console.log(error.code + " : " + error.message);
-          alert(error.message);
-        });
-      }
       Database.ref('/users/' + data.firebase.uid).once('value').then(function(snapshot) {
         data.user = {
           name: snapshot.val().name,
@@ -36,13 +20,13 @@ angular.module('starter.services', ['ionic','firebase'])
           programStart: snapshot.val().programStart,
           gid: snapshot.val().gid,
           healthy: snapshot.val().healthy
-        }
+        };
         data.user.ready = true;
         if (data.group === false)
           groupRequest();
         firebase.storage().ref('profile_pic/' + data.firebase.uid).getDownloadURL().then(function(url) {
-          data.user.profilePic = url // Insert url into an <img> tag to "download"
-          data.profilePic = { ready: true }
+          data.user.profilePic = url; // Insert url into an <img> tag to "download"
+          data.profilePic = { ready: true };
           }).catch(function(error) {
             console.log(error.code + " : " + error.message)
           });
@@ -56,7 +40,7 @@ angular.module('starter.services', ['ionic','firebase'])
         days: {},
         weekWeighings: [],
         // streak: 0,  //Unused
-        // lWeight: 0, //Unused
+        LWeight: 0, //Unused
         weekSports: [],
         weekSportsTime: 0,
         weekSportsPlan: [],
@@ -66,7 +50,7 @@ angular.module('starter.services', ['ionic','firebase'])
       var fnc = function(snapshot) {
         data.track.days[snapshot.getKey()] = snapshot.val();
         // data.track.streak = 0; //Unused
-        // data.track.lWeight = 0; //Unused
+        data.track.LWeight = 0;
         data.track.weekSports = [];
         data.track.weekSportsTime = 0;
         data.track.weekSportsPlan = [];
@@ -80,7 +64,7 @@ angular.module('starter.services', ['ionic','firebase'])
           var elemDate = new Date(frDate[0], frDate[1]-1, frDate[2]);
           var snapshotChild = data.track.days[day];
           // if (snapshotChild.weight !== undefined)
-          //   data.track.lWeight = snapshotChild.weight;
+          data.track.LWeight = snapshotChild.weight;
 
           // Current Week tracking
           if (elemDate.getMonth() === Time.getMonth() &&
@@ -104,7 +88,8 @@ angular.module('starter.services', ['ionic','firebase'])
           if (lastWeek === false || elemDate.getMonth() !== lastWeek.getMonth() ||
               elemDate.getDate() <= lastWeekFirstD || elemDate.getDate() >= lastWeekFirstD + 6)
           {
-            var elemDate_varName = elemDate.getMonth() + "-" + elemDate.getDate();
+
+            var elemDate_varName = elemDate.getFullYear() + "-" + elemDate.getMonth() + "-" + elemDate.getDate();
             lastWeek = elemDate;
             lastWeekFirstD = lastWeek.getDate() - lastWeek.getDay();
             //TODO got -1 in lastWeekFirst rebuild week data system
@@ -202,14 +187,14 @@ angular.module('starter.services', ['ionic','firebase'])
       }).catch(fncError)
     });
     firebase.auth().onAuthStateChanged(function(user) {
-      if (user !== null) {
+      if (user !== undefined && user !== null) {
         data.firebase.uid = user.uid;
         data.firebase.ready = true;
         userRequest();
         trackRequest();
-        $location.path('/tab/account');
+        $rootScope.$apply(function() { $location.path('/tab/account'); } );
       } else {
-        $location.path('/tab/login');
+        $rootScope.$apply(function() { $location.path('/tab/login'); } );
       }
     });
     return {
@@ -251,11 +236,23 @@ angular.module('starter.services', ['ionic','firebase'])
       }),
       register: (function (sFirebase, $scope) {
         data.firebase.register = true;
-        firebase.auth().createUserWithEmailAndPassword($scope.email, $scope.passwordP).then(function(error) {
-          console.log("Logedin redirecting");
+        firebase.auth().createUserWithEmailAndPassword($scope.email, $scope.passwordP).then(function(acc) {
+          Database.ref('users/' + acc.uid).set({
+            name: sFirebase.data.user.name,
+            email: sFirebase.data.user.email,
+            age: sFirebase.data.user.age,
+            bio: sFirebase.data.user.bio,
+            programStart: new Date().toDateString(),
+            gid: "false"
+          });
+          var profileRef = firebase.storage().ref().child('profile_pic/' + acc.uid);
+          profileRef.put(sFirebase.data.user.profilePic).then(function (snapshot) {
+          }).catch(function (error) {
+            console.log(error.code + " : " + error.message);
+          });
+          console.log("Registered redirecting");
         }).catch(function(error) {
           console.log(error.code + " : " + error.message);
-          alert(error.message);
         });
       })
     }

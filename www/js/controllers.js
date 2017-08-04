@@ -97,7 +97,9 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     $scope.setTrack = function(elem, name) {
       if (name === "weight" && elem > 0)
       {
-        $scope.toggleWeight = false
+        if (weight > 500)
+          return alert("Plus de 500 Kilos ?");
+        $scope.toggleWeight = false;
         sFirebase.trackingSet(name, elem, selectedDate);
       }
       else if (name === "steps" && elem > 0)
@@ -160,6 +162,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
     var trackingDay = function (scope) {
       var val = sFirebase.data.track.days[selectedDate];
+
       if (val === undefined)
       {
         scope.iweight = 0;
@@ -263,19 +266,25 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
     var headerDisplay = function() {
       var programStartD = new Date(sFirebase.data.user.programStart);
+      var LWeight = sFirebase.data.track.LWeight;
+      var FWeight = sFirebase.data.user.FWeight;
       $scope.userPic = sFirebase.data.user.profilePic;
-      $scope.programTime = Math.round((d-programStartD)/ 604800000);
-      $scope.progress = (sFirebase.data.user.FWeight - sFirebase.data.track.lWeight) / (sFirebase.data.user.FWeight * 0.1);
+      $scope.programTime = Math.round((d - programStartD)/ 604800000);
+      $scope.progress = (FWeight - LWeight) / (FWeight * 0.1);
+      if (isNaN($scope.progress) || $scope.progress < 0)
+        $scope.progress = 0;
       $scope.circle.animate($scope.progress);
     };
 
     sFirebase.callback.tracking = (function() { trackingDay($scope) });
     var id1 = $interval(function() {
-      waitready(sFirebase.data.track, sFirebase.callback.tracking, id1, $interval)}, 100);
+      waitready(sFirebase.data.track, sFirebase.callback.tracking, id1, $interval)
+    }, 100);
 
     var id2 = $interval(function() {
-      waitready(sFirebase.data.profilePic,
-                headerDisplay, id2, $interval)}, 100);
+      waitready(sFirebase.data.profilePic, headerDisplay, id2, $interval)
+    }, 100);
+
     $scope.circle = new ProgressBar.Circle("#progressBarT", {
       strokeWidth: 10,
       color: '#73BF5A'
@@ -584,7 +593,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       scope.PrgramStart = sFirebase.data.user.programStart;
 
       scope.FWeight = sFirebase.data.user.FWeight;
-      scope.LWeight = track.lWeight;
+      scope.LWeight = track.LWeight;
       scope.weekSportsPlanTime = sFirebase.data.track.weekSportsPlanTime
       scope.weekSportsObjectiv = [ track.weekSportsTime, 150 - track.weekSportsTime ];
       //  scope.Streak = track.streak;
@@ -595,11 +604,13 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       scope.chartWeight.data.labels = [];
       for (var w in scope.weighings)
       {
-        if (length > 10)
+        if (length > 5)
           --length;
         else {
             scope.chartWeight.data.datasets[0].data.push(scope.weighings[w]);
-            scope.chartWeight.data.labels.push(w);
+            var frDate = w.split("-");
+            var elemDate = new Date(frDate[0], frDate[1], frDate[2]);
+            scope.chartWeight.data.labels.push(elemDate.getDate() + "/" + elemDate.getMonth());
         }
       }
       scope.chartWeight.update();
@@ -670,8 +681,10 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
   .controller('RegisterCtrl', function($scope, sFirebase) {
     $scope.submit = function() {
-      if (!$scope.passwordP || !$scope.email)
+      if (!$scope.passwordP || !$scope.email || !$scope.fileSelected)
         return ;
+      if ($scope.bio === undefined)
+          $scope.bio = "Non renseigné";
       sFirebase.data.user = { email: $scope.email, name: $scope.name, age: $scope.age, bio: $scope.bio, profilePic: $scope.fileSelected };
       sFirebase.register(sFirebase, $scope);
     };
