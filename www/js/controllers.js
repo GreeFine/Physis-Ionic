@@ -165,9 +165,9 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
       if (val === undefined)
       {
-        scope.iweight = 0;
+        scope.iweight = undefined;
         scope.validWeight = false;
-        scope.isteps = 0;
+        scope.isteps = undefined;
         scope.validSteps = false;
         scope.selectedBF = [];
         scope.validBF = false;
@@ -478,14 +478,6 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           ]
         }]
     }
-    $scope.chartWeight = undefined;
-    $scope.chartHealthy = undefined;
-    $scope.chartSport = undefined;
-    $scope.chartWeeks = [];
-    $scope.sport = [1, 1, 1];
-    $scope.weighings = [1, 1, 1];
-    $scope.healthy = [1, 1, 1];
-    $scope.weeks = [1, 2, 3, 4, 5, 6];
 
     $scope.chartWeightUp = function () {
       if ($scope.chartWeight !== undefined)
@@ -585,8 +577,43 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     };
 
     $scope.updateWeighChart = function() {
-      //TODO update from week to month;
+      if ($scope.weightingsGraphState)
+        $scope.weighings = sFirebase.data.track.weekWeighings;
+      else
+        $scope.weighings = sFirebase.data.track.monthWeighings;
+      var length = Object.keys($scope.weighings).length;
+      $scope.chartWeight.data.datasets[0].data = [];
+      $scope.chartWeight.data.labels = [];
+      for (var w in $scope.weighings)
+      {
+        if (length > 5)
+          --length;
+        else
+        {
+          var frDate = w.split("-");
+          var elemDate = new Date(frDate[0], frDate[1], frDate[2]);
+          $scope.chartWeight.data.datasets[0].data.push($scope.weighings[w]);
+          $scope.chartWeight.data.labels.push(elemDate.getDate() + "/" + elemDate.getMonth());
+        }
+      }
+      $scope.chartWeight.update();
     };
+
+    //START DEFINITION
+    $scope.chartWeight = undefined;
+    $scope.chartHealthy = undefined;
+    $scope.chartSport = undefined;
+    $scope.chartWeeks = [];
+    $scope.sport = [1, 1, 1];
+    $scope.weighings = [1, 1, 1];
+    $scope.healthy = [1, 1, 1];
+    $scope.weeks = [1, 2, 3, 4, 5, 6];
+    $scope.selectedPage = 1; // Selected page
+    $scope.weightingsGraphState = true; // Selected mode for weightings
+
+    $scope.chartWeightUp();
+    $scope.chartSportUp();
+    $scope.chartHealthyUp();
 
     var displayProgress = function (scope) {
       var track = sFirebase.data.track;
@@ -599,21 +626,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       //  scope.Streak = track.streak;
 
       scope.weighings = sFirebase.data.track.weekWeighings;
-      var length = Object.keys(scope.weighings).length;
-      scope.chartWeight.data.datasets[0].data = [];
-      scope.chartWeight.data.labels = [];
-      for (var w in scope.weighings)
-      {
-        if (length > 5)
-          --length;
-        else {
-            scope.chartWeight.data.datasets[0].data.push(scope.weighings[w]);
-            var frDate = w.split("-");
-            var elemDate = new Date(frDate[0], frDate[1], frDate[2]);
-            scope.chartWeight.data.labels.push(elemDate.getDate() + "/" + elemDate.getMonth());
-        }
-      }
-      scope.chartWeight.update();
+      scope.updateWeighChart();
 
       scope.healthy = track.healthy;
       scope.chartHealthy.data.datasets[0].data = track.healthy;
@@ -639,13 +652,6 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
       scope.circle.animate((scope.FWeight - scope.LWeight) / (scope.FWeight * 0.1));
      };
-
-    //START DEFINITION
-    $scope.select = 1; // Selected graph
-    $scope.select2 = true; // Selected mode for weightings
-    $scope.chartWeightUp();
-    $scope.chartSportUp();
-    $scope.chartHealthyUp();
 
     sFirebase.callback.progress = function() { displayProgress($scope) };
     var id1 = $interval(function() {

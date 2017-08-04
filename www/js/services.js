@@ -39,6 +39,7 @@ angular.module('starter.services', ['ionic','firebase'])
       data.track = {
         days: {},
         weekWeighings: [],
+        monthWeighings: [],
         // streak: 0,  //Unused
         LWeight: 0, //Unused
         weekSports: [],
@@ -46,7 +47,6 @@ angular.module('starter.services', ['ionic','firebase'])
         weekSportsPlan: [],
       }
 
-      data.track.weekWeighings = [];
       var fnc = function(snapshot) {
         data.track.days[snapshot.getKey()] = snapshot.val();
         // data.track.streak = 0; //Unused
@@ -57,6 +57,7 @@ angular.module('starter.services', ['ionic','firebase'])
         data.track.weeksSports = {};
         var lastWeekFirst = false;
         var lastWeek = false;
+        var lastMonth = -1;
 
         for (var day in data.track.days)
         {
@@ -88,13 +89,19 @@ angular.module('starter.services', ['ionic','firebase'])
           if (lastWeek === false || elemDate.getMonth() !== lastWeek.getMonth() ||
               elemDate.getDate() <= lastWeekFirstD || elemDate.getDate() >= lastWeekFirstD + 6)
           {
-
             var elemDate_varName = elemDate.getFullYear() + "-" + elemDate.getMonth() + "-" + elemDate.getDate();
             lastWeek = elemDate;
             lastWeekFirstD = lastWeek.getDate() - lastWeek.getDay();
             //TODO got -1 in lastWeekFirst rebuild week data system
             if (snapshotChild.weight !== undefined)
+            {
               data.track.weekWeighings[elemDate_varName] = Number(snapshotChild.weight);
+              if (elemDate.getMonth() > lastMonth)
+              {
+                lastMonth = elemDate.getMonth();
+                data.track.monthWeighings[elemDate_varName] = Number(snapshotChild.weight);
+              }
+            }
             if (data.track.weeksSports[elemDate_varName] === undefined)
               data.track.weeksSports[elemDate_varName] = 0;
             if (snapshotChild.sportDay !== undefined)
@@ -182,7 +189,7 @@ angular.module('starter.services', ['ionic','firebase'])
         var ref = firebase.storage().ref('profile_pic/' + data.group.coach);
         ref.getDownloadURL().then(function(url) {
           data.coach.profilePic = url;
-          data.coach.ready = true
+          data.coach.ready = true;
         }).catch(fncError)
       }).catch(fncError)
     });
