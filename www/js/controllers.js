@@ -50,7 +50,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         // Select the first day as container
         var firstDayWeek = new Date();
         firstDayWeek.setDate(d.getDate() - d.getDay());
-        var selectedDate = d.getFullYear() + '-' + (d.getMonth()+1) + '-'
+        var selectedDate = firstDayWeek.getFullYear() + '-' + (firstDayWeek.getMonth()+1) + '-'
             + (firstDayWeek.getDate() > 9 ? firstDayWeek.getDate() : '0' + firstDayWeek.getDate());
         sFirebase.trackingSet("weekSportsPlan", $scope.weekSportsPlan, selectedDate);
         $scope.validSpPlan = true;
@@ -79,6 +79,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     }
 
     $scope.deletePlan = function(index) {
+      $scope.weekSportsPlanTime -= $scope.weekSportsPlan[index][2];
       $scope.weekSportsPlan.splice(index, 1);
     }
 
@@ -548,7 +549,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 				    },
 				    center: {
 					    maxText: '80%',
-					    text: ($scope.weekSportsTime + " minutes effectuées"),
+					    text: "0 minutes effectuées",
 					    fontColor: '#008000',
 					    fontStyle: 'normal',
 					    minFontSize: 2,
@@ -562,7 +563,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
     $scope.chartHealthyUp = function () {
       if ($scope.healthy === undefined)
-        $scope.healthy = [0, 0, 0];
+        $scope.healthy = [1, 1, 1];
       if ($scope.chartHealthy !== undefined)
         $scope.chartHealthy.destroy();
       configHealthy.datasets[0].data = $scope.healthy;
@@ -628,11 +629,14 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       scope.weighings = sFirebase.data.track.weekWeighings;
       scope.updateWeighChart();
 
-      scope.healthy = track.healthy;
-      scope.chartHealthy.data.datasets[0].data = track.healthy;
+      if (sFirebase.data.user.healthy !== undefined)
+        scope.healthy = sFirebase.data.user.healthy;
+      scope.chartHealthy.data.datasets[0].data = scope.healthy;
       scope.chartHealthy.update();
 
       scope.weekSportsTime = Math.round(track.weekSportsTime);
+      if ($scope.weekSportsTime === undefined)
+        $scope.weekSportsTime = 0;
       scope.chartSport.data.datasets[0].data = $scope.weekSportsObjectiv;
       scope.chartSport.options.elements.center.text = ($scope.weekSportsTime + " minutes effectuées");
       scope.chartSport.update();

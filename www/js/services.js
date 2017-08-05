@@ -80,7 +80,7 @@ angular.module('starter.services', ['ionic','firebase'])
             {
               data.track.weekSportsPlanTime = 0;
               data.track.weekSportsPlan = snapshotChild.weekSportsPlan;
-              for (var index in snapshotChild.weekSportsPlan)
+              for (var index in data.track.weekSportsPlan)
                 data.track.weekSportsPlanTime += Number(snapshotChild.weekSportsPlan[index][2]);
             }
           }
@@ -162,6 +162,7 @@ angular.module('starter.services', ['ionic','firebase'])
         }).catch(fncError)
       }
     });
+
     var coachRequest = (function() {
       var refConversation = Database.ref('coach/' + data.group.coach + '/conversations/' + data.firebase.uid);
       data.coach = {
