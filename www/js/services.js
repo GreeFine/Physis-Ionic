@@ -71,6 +71,8 @@ angular.module('starter.services', ['ionic','firebase'])
           if (elemDate.getMonth() === Time.getMonth() &&
               elemDate.getDate() >= TimeFirst && elemDate.getDate() <= TimeFirst + 6)
           {
+            console.log(elemDate)
+            console.log(snapshotChild)
             if (snapshotChild.sportDay !== undefined)
             {
               data.track.weekSportsTime += Number(snapshotChild.sportDay[1]);

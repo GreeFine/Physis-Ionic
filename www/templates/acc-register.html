@@ -1,5 +1,4 @@
-<ion-view view-title="Register">
-  <ion-content ng-controller="RegisterCtrl">
+<!--
     <form name="registerForm" novalidate>
       <div class="list">
         <label class="item item-input">
@@ -64,5 +63,63 @@
                 ng-click="submit()">Submit</button>
       </div>
     </form>
+-->
+<ion-view view-title="Register">
+  <ion-content ng-controller="RegisterCtrl" class="back">
+    <head>
+      <meta charset="UTF-8">
+      <title>Interactive Sign Up Form</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,900' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    </head>
+
+    <body>
+      <div class="registration-form" style="margin-top:10%">
+        <header>
+          <h1>Sign Up</h1>
+          <p>Fill in all informations</p>
+        </header>
+        <form>
+          <div class="input-section email-section">
+            <input class="email" ng-model="email" style="height:inherit" ng-change="email_onChange()" type="email" placeholder="ENTER YOUR E-MAIL HERE" autocomplete="off"/>
+            <div class="animated-button">
+              <span class="icon-paper-plane">
+                <i class="fa fa-envelope-o"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_email()" class="next-button email">
+                <i class="fa fa-arrow-up"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-section password-section folded">
+            <input class="password" ng-model="password" style="height:inherit" ng-change="password_onChange()" type="password" placeholder="ENTER YOUR PASSWORD HERE"/>
+            <div class="animated-button">
+              <span class="icon-lock">
+                <i class="fa fa-lock"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_password()" class="next-button password">
+                <i class="fa fa-arrow-up"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-section repeat-password-section folded">
+            <input class="repeat-password" ng-model="repeat_password" style="height:inherit" ng-change="repeat_password_onChange()" type="password" placeholder="REPEAT YOUR PASSWORD HERE"/>
+            <div class="animated-button">
+              <span class="icon-repeat-lock">
+                <i class="fa fa-lock"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_repeat_password()" class="next-button repeat-password">
+                <i class="fa fa-paper-plane"></i>
+              </span>
+            </div>
+          </div>
+          <div class="success">
+            <p>ACCOUNT CREATED</p>
+          </div>
+        </form>
+      </div>
+    </body>
+
   </ion-content>
 </ion-view>

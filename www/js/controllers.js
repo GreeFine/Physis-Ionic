@@ -54,10 +54,10 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
             + (firstDayWeek.getDate() > 9 ? firstDayWeek.getDate() : '0' + firstDayWeek.getDate());
         sFirebase.trackingSet("weekSportsPlan", $scope.weekSportsPlan, selectedDate);
         $scope.validSpPlan = true;
-        $scope.toggleSpPlan = false
+        $scope.toggleSpPlan = false;
       }
       else
-        alert("Votre planning d'activite est vide")
+        alert("Votre planning d'activite est vide");
     };
 
     $scope.addSpPlan = function() {
@@ -622,7 +622,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
 
       scope.FWeight = sFirebase.data.user.FWeight;
       scope.LWeight = track.LWeight;
-      scope.weekSportsPlanTime = sFirebase.data.track.weekSportsPlanTime
+      scope.weekSportsPlanTime = sFirebase.data.track.weekSportsPlanTime || 0;
       scope.weekSportsObjectiv = [ track.weekSportsTime, 150 - track.weekSportsTime ];
       //  scope.Streak = track.streak;
 
@@ -690,6 +690,60 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
   })
 
   .controller('RegisterCtrl', function($scope, sFirebase) {
+    $scope.email_onChange = function(){
+      var icon = angular.element(document.querySelector('.icon-paper-plane'));
+        if ($scope.email) {
+          icon.addClass("next");
+        } else {
+          icon.removeClass("next");
+        }
+      }
+
+    $scope.next_hover = function() {
+      var next = angular.element(document.querySelector('.next-button'));
+      next.css('cursor', 'pointer');
+    };
+
+    $scope.next_button_email = function() {
+      var email_section = angular.element(document.querySelector('.email-section'));
+      var password_section = angular.element(document.querySelector('.password-section'));
+      email_section.addClass("fold-up");
+      password_section.removeClass("folded");
+    };
+
+    $scope.password_onChange = function() {
+      var icon = angular.element(document.querySelector('.icon-lock'));
+      if ($scope.password) {
+        icon.addClass("next");
+      } else {
+        icon.removeClass("next");
+      }
+    };
+
+    $scope.next_button_password = function() {
+      var password_section = angular.element(document.querySelector('.password-section'));
+      var repeat_password_section = angular.element(document.querySelector('.repeat-password-section'));
+      password_section.addClass("fold-up");
+      repeat_password_section.removeClass("folded");
+    };
+
+    $scope.repeat_password_onChange = function() {
+      var icon = angular.element(document.querySelector('.icon-repeat-lock'));
+      if ($scope.repeat_password) {
+        icon.addClass("next");
+      } else {
+        icon.removeClass("next");
+      }
+    };
+
+    $scope.next_button_repeat_password = function() {
+      console.log("Something");
+      var repeat_password_section = angular.element(document.querySelector('.repeat-password-section'));
+      var success = angular.element(document.querySelector('.success'));
+      repeat_password_section.addClass("fold-up");
+      success.css("marginTop", 0);
+    };
+
     $scope.submit = function() {
       if (!$scope.passwordP || !$scope.email || !$scope.fileSelected)
         return ;
@@ -698,6 +752,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       sFirebase.data.user = { email: $scope.email, name: $scope.name, age: $scope.age, bio: $scope.bio, profilePic: $scope.fileSelected };
       sFirebase.register(sFirebase, $scope);
     };
+
     $scope.passwdcheck = function() {
       if ($scope.passwordCheck !== $scope.passwordP)
         $scope.match = true;
