@@ -22,7 +22,7 @@ angular.module('starter.services', ['ionic','firebase'])
           healthy: snapshot.val().healthy
         };
         data.user.ready = true;
-        if (data.group === false)
+        if (data.group === false && data.user.gid !== "false")
           groupRequest();
         firebase.storage().ref('profile_pic/' + data.firebase.uid).getDownloadURL().then(function(url) {
           data.user.profilePic = url; // Insert url into an <img> tag to "download"
@@ -128,13 +128,14 @@ angular.module('starter.services', ['ionic','firebase'])
 
     var groupRequest = (function() {
       data.group = {
+        ready: false,
         uids: [],
         names: [],
         profilePics: [],
         conversation: []
       }
-      var refConversation = Database.ref('groups/' + data.user.gid + '/messages/').limitToLast(40)
-      var fncConversation = function(snapshot) {
+      var refConversation = Database.ref('groups/' + data.user.gid + '/messages/').limitToLast(40);
+      var fncConversation = function(snapshot)  {
         var index = data.group.conversation.push(snapshot.val()) - 1
         if (data.group.conversation[index].name === data.user.name)
         {
@@ -143,10 +144,11 @@ angular.module('starter.services', ['ionic','firebase'])
         }
         else
           data.group.conversation[index].color = "assertive"
+        console.log(data.group.conversation);
       }
       refConversation.orderByKey().on('child_added', fncConversation);
       refConversation.orderByKey().on('child_changed', fncConversation);
-      if (data.user.gid === false) {
+      if (data.user.gid !== "false") {
         Database.ref('/groups/' + data.user.gid).once('value').then(function (snapshot) {
           data.group.uids = snapshot.val().uids;
           data.group.coach = snapshot.val().coach;
@@ -216,12 +218,13 @@ angular.module('starter.services', ['ionic','firebase'])
           Database.ref('/users/' + data.firebase.uid + "/FWeight").set(value);
       }),
       sendMessage: (function (scope,who) {
-        if (scope.message === undefined && scope.img === undefined)
+        var ref;
+        if (scope.message === undefined && scope.img === undefined || data.user.gid === "false")
           return
-        console.log("Sending : " + Time.getTime() + ", " + scope.message + ", " + scope.img);
-        var ref = Database.ref('groups/' + data.user.gid + '/messages/')
         if (who)
-          ref = Database.ref('coach/' + data.group.coach + '/conversations/' + data.firebase.uid)
+          ref = Database.ref('coach/' + data.group.coach + '/conversations/' + data.firebase.uid);
+        else
+          ref = Database.ref('groups/' + data.user.gid + '/messages/');
         ref.push({
           time: Time.getTime(),
           msg: scope.message,

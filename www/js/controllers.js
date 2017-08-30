@@ -292,7 +292,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
     });
   })
 
-  .controller('GroupCtrl', function($scope, $interval, sFirebase, $cordovaCamera) {
+  .controller('GroupCtrl', function($scope, $interval, sFirebase) {
     var groupDisplay = function(scope) {
       scope.Gnames = sFirebase.data.group.gNames;
       scope.conversation = sFirebase.data.group.conversation;
@@ -300,10 +300,11 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
       scope.GprofilePic = sFirebase.data.group.profilePics;
       scope.Gnames = sFirebase.data.group.names;
     }
-    var id1 = $interval(function() {
-      waitready(sFirebase.data.group, sFirebase.callback.groupDisplay,
-                id1, $interval)}, 500);
+
     sFirebase.callback.groupDisplay = (function() { groupDisplay($scope) });
+    var id1 = $interval(function() {
+      waitready(sFirebase.data.group, sFirebase.callback.groupDisplay, id1, $interval)
+    }, 500);
   })
 
   .controller('AccountCtrl', function($scope, $interval, sFirebase) {
@@ -788,6 +789,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
         return ;
       if ($scope.bio === undefined)
           $scope.bio = "Non renseigné";
+
       sFirebase.data.user = { email: $scope.email, name: $scope.name, age: $scope.age, bio: $scope.bio, profilePic: $scope.fileSelected };
       sFirebase.register(sFirebase, $scope);
     };
@@ -809,8 +811,11 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
   .controller('inputCtrl', function($scope, sFirebase) {
     $scope.img = "";
     $scope.message = "";
-    $scope.sendMsg = function(who) { sFirebase.sendMessage($scope,who); $scope.message = undefined };
-        if (typeof Camera !== 'undefined')
+    $scope.sendMsg = function(who) {
+      sFirebase.sendMessage($scope, who);
+      $scope.message = undefined;
+    };
+    if (typeof Camera !== 'undefined')
     {
       $scope.camera = true;
       $scope.takePhoto = function () {
@@ -831,6 +836,7 @@ angular.module('starter.controllers', ['firebase', 'ionic', 'ngCordova'])
           // An error occured. Show a message to the user
         });
       };
+
       $scope.choosePhoto = function () {
         var options = {
           quality: 75,
