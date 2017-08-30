@@ -69,7 +69,7 @@
     <head>
       <meta charset="UTF-8">
       <title>Interactive Sign Up Form</title>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
       <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,900' rel='stylesheet' type='text/css'>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     </head>
@@ -82,7 +82,7 @@
         </header>
         <form>
           <div class="input-section email-section">
-            <input class="email" ng-model="email" style="height:inherit" ng-change="email_onChange()" type="email" placeholder="ENTER YOUR E-MAIL HERE" autocomplete="off"/>
+            <input class="email" ng-model="email" style="height:inherit" ng-change="email_onChange()" type="email" placeholder="ENTREZ VOTRE E-MAIL" autocomplete="off"/>
             <div class="animated-button">
               <span class="icon-paper-plane">
                 <i class="fa fa-envelope-o"></i>
@@ -93,7 +93,7 @@
             </div>
           </div>
           <div class="input-section password-section folded">
-            <input class="password" ng-model="password" style="height:inherit" ng-change="password_onChange()" type="password" placeholder="ENTER YOUR PASSWORD HERE"/>
+            <input class="password" ng-model="password" style="height:inherit" ng-change="password_onChange()" type="password" placeholder="MOT DE PASSE"/>
             <div class="animated-button">
               <span class="icon-lock">
                 <i class="fa fa-lock"></i>
@@ -104,18 +104,55 @@
             </div>
           </div>
           <div class="input-section repeat-password-section folded">
-            <input class="repeat-password" ng-model="repeat_password" style="height:inherit" ng-change="repeat_password_onChange()" type="password" placeholder="REPEAT YOUR PASSWORD HERE"/>
+            <input class="repeat-password" ng-model="repeat_password" style="height:inherit" ng-change="repeat_password_onChange()" type="password" placeholder="CONFIRMEZ VOTRE MOT DE PASSE"/>
             <div class="animated-button">
               <span class="icon-repeat-lock">
                 <i class="fa fa-lock"></i>
               </span>
               <span ng-mouseover="next_hover()" ng-click="next_button_repeat_password()" class="next-button repeat-password">
+                <i class="fa fa-arrow-up"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-section name-section folded">
+            <input class="name" ng-model="name" style="height:inherit" ng-change="name_onChange()" type="text" placeholder="VOTRE NOM"/>
+            <div class="animated-button">
+              <span class="icon-name">
+                <i class="fa fa-user-o"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_name()" class="next-button name">
+                <i class="fa fa-arrow-up"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-section age-section folded">
+            <input class="age" ng-model="age" style="height:inherit" ng-change="age_onChange()" type="number" placeholder="VOTRE AGE"/>
+            <div class="animated-button">
+              <span class="icon-age">
+                <i class="fa fa-birthday-cake"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_age()" class="next-button age">
+                <i class="fa fa-arrow-up"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-section avatar-section folded">
+            <button id="fileUpload" name="fileUpload" class="fileUpload">
+              {{ fileSelected.name || "Ma photo de Profile" }}
+              <input type="file" fileread="fileSelected" id="picfile"
+                     name="picfile" class="upload" ng-model="picfile"/>
+            </button>
+            <div class="animated-button">
+              <span class="icon-avatar {{ (fileSelected) ? 'next' : '' }}">
+                <i class="fa fa-picture-o"></i>
+              </span>
+              <span ng-mouseover="next_hover()" ng-click="next_button_avatar()" class="next-button avatar">
                 <i class="fa fa-paper-plane"></i>
               </span>
             </div>
           </div>
           <div class="success">
-            <p>ACCOUNT CREATED</p>
+            <p>COMPTE CRÉÉ</p>
           </div>
         </form>
       </div>

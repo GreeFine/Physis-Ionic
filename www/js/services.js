@@ -246,7 +246,7 @@ angular.module('starter.services', ['ionic','firebase'])
       }),
       register: (function (sFirebase, $scope) {
         data.firebase.register = true;
-        firebase.auth().createUserWithEmailAndPassword($scope.email, $scope.passwordP).then(function(acc) {
+        firebase.auth().createUserWithEmailAndPassword($scope.email, $scope.password).then(function(acc) {
           Database.ref('users/' + acc.uid).set({
             name: sFirebase.data.user.name,
             email: sFirebase.data.user.email,
